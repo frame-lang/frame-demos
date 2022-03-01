@@ -2,15 +2,16 @@
 
     -interface-
 
-    Start[mom:MOM] @(|>>|)
-    Timer
-    SystemError
-    SystemRestart
+    start[mom:`*MOM`] @(|>>|)
+    stop 
+    timer
+    systemError
+    systemRestart
 
     -machine-
 
     $Begin
-        |>>|
+        |>>|[mom:`*MOM`] 
             startWorkingTimer()
             -> $Red ^
 
@@ -45,8 +46,15 @@
             changeFlashingAnimation() ^
         |systemRestart|
             -> $Red  ^
+        |stop| 
+            -> $End ^
+
+    $End 
+        |>| stopWorkingTimer() ^
 
     $Working
+        |stop| 
+            -> $End ^
         |systemError|
             -> $FlashingRed ^
 
@@ -70,5 +78,6 @@
     -domain-
 
     var flashColor:string = ""
-    var mom:MOM = null
+    var mom:`*MOM` = nil
+    var ticker:`*time.Ticker` = nil 
 ##

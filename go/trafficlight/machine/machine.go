@@ -1,9 +1,9 @@
-package trafficlight
+package machine
 
 import (
 	"time"
 
-	"github.com/frame-lang/frame-demos/go/web/traffic/framelang"
+	"github.com/frame-lang/frame-demos/trafficlight/framelang"
 )
 
 const (
@@ -12,11 +12,13 @@ const (
 	green
 	yellow
 	flashingRed
+	end
 	working
 )
 
 type TrafficLight interface {
 	Start(mom *MOM)
+	Stop()
 	Timer()
 	SystemError()
 	SystemRestart()
@@ -41,18 +43,18 @@ type actions interface {
 
 type trafficLightStruct struct {
 	_state_    framelang.FrameState
+	flashColor string
 	mom        *MOM
 	ticker     *time.Ticker
-	flashColor string
 }
 
 func New() TrafficLight {
 	m := new(trafficLightStruct)
 	// Verify TrafficLightStruct implements actions interface
 	var _ actions = m
+	m.flashColor = ""
 	m.mom = nil
 	m.ticker = nil
-	m.flashColor = ""
 	return m
 }
 
@@ -62,6 +64,11 @@ func (m *trafficLightStruct) Start(mom *MOM) {
 	params := make(map[string]interface{})
 	params["mom"] = mom
 	e := framelang.FrameEvent{Msg: ">>", Params: params}
+	m._mux_(&e)
+}
+
+func (m *trafficLightStruct) Stop() {
+	e := framelang.FrameEvent{Msg: "stop"}
 	m._mux_(&e)
 }
 
@@ -94,6 +101,8 @@ func (m *trafficLightStruct) _mux_(e *framelang.FrameEvent) {
 		m._yellow_(e)
 	case flashingRed:
 		m._flashingRed_(e)
+	case end:
+		m._end_(e)
 	case working:
 		m._working_(e)
 	}
@@ -104,7 +113,6 @@ func (m *trafficLightStruct) _mux_(e *framelang.FrameEvent) {
 func (m *trafficLightStruct) _begin_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
-		m.mom = e.Params["mom"].(*MOM)
 		m.startWorkingTimer()
 		m._transition_(red)
 		return
@@ -168,11 +176,25 @@ func (m *trafficLightStruct) _flashingRed_(e *framelang.FrameEvent) {
 	case "systemRestart":
 		m._transition_(red)
 		return
+	case "stop":
+		m._transition_(end)
+		return
+	}
+}
+
+func (m *trafficLightStruct) _end_(e *framelang.FrameEvent) {
+	switch e.Msg {
+	case ">":
+		m.stopWorkingTimer()
+		return
 	}
 }
 
 func (m *trafficLightStruct) _working_(e *framelang.FrameEvent) {
 	switch e.Msg {
+	case "stop":
+		m._transition_(end)
+		return
 	case "systemError":
 		m._transition_(flashingRed)
 		return

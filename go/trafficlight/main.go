@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	"github.com/frame-lang/frame-demos/go/web/traffic/trafficlight"
+	trafficlight "github.com/frame-lang/frame-demos/trafficlight/machine"
 )
 
 func main() {
@@ -11,6 +11,6 @@ func main() {
 	mom := trafficlight.NewMOM()
 	mom.Start()
 
-	time.Sleep(600000 * time.Millisecond)
+	time.Sleep(5000 * time.Millisecond)
 	mom.Stop()
 }

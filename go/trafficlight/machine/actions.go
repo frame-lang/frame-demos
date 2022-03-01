@@ -1,4 +1,4 @@
-package trafficlight
+package machine
 
 import (
 	"fmt"

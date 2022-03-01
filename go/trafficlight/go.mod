@@ -1,3 +1,3 @@
-module github.com/frame-lang/frame-demos/go/web/traffic
+module github.com/frame-lang/frame-demos/trafficlight
 
 go 1.17

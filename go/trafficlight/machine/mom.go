@@ -1,4 +1,4 @@
-package trafficlight
+package machine
 
 //	"fmt"
 
@@ -18,5 +18,5 @@ func (mom *MOM) Start() {
 }
 
 func (mom *MOM) Stop() {
-	//	mom.m.Stop()
+	mom.m.Stop()
 }
