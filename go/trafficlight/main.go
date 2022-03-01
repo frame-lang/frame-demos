@@ -3,7 +3,7 @@ package main
 import (
 	"time"
 
-	trafficlight "github.com/frame-lang/frame-demos/trafficlight/machine"
+	trafficlight "github.com/frame-lang/frame-demos/trafficlight/trafficlight"
 )
 
 func main() {
