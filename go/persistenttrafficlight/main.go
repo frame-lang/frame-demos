@@ -10,13 +10,13 @@ import (
 
 func main() {
 
-	ticker := time.NewTicker(1000 * time.Millisecond)
 	stop := make(chan bool)
 	finished := make(chan bool)
 	mom, err := trafficlight.NewMOM()
 	if err != nil {
 		log.Fatal(err)
 	}
+	ticker := time.NewTicker(1000 * time.Millisecond)
 	mom.Start()
 	go func() {
 		for {

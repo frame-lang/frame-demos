@@ -11,29 +11,41 @@ type MOM struct {
 
 func NewMOM() (*MOM, error) {
 	mom := &MOM{}
-	var err error
-	mom.m, err = New(mom, nil)
-	if err != nil {
-		return nil, err
-	}
 	return mom, nil
 }
 
 //func (mom *MOM) Start(w http.ResponseWriter, r *http.Request) {
 func (mom *MOM) Start() {
+	var err error
+	mom.m, err = New(mom, nil)
+	if err != nil {
+		// TODO
+		return
+	}
 	mom.m.Start()
 	mom.data, _ = json.Marshal(mom.m)
-	mom.data = nil
+	mom.m = nil
 }
 
 func (mom *MOM) Stop() {
+	var err error
+	mom.m, err = New(mom, mom.data)
+	if err != nil {
+		// TODO
+		return
+	}
 	mom.m.Stop()
 }
 
 func (mom *MOM) Tick() {
-
-	json.Unmarshal(mom.data, mom.m)
+	var err error
+	mom.m, err = New(mom, mom.data)
+	if err != nil {
+		// TODO
+		return
+	}
+	//	json.Unmarshal(mom.data, mom.m)
 	mom.m.Tick()
 	mom.data, _ = json.Marshal(mom.m)
-	mom.data = nil
+	mom.m = nil
 }
