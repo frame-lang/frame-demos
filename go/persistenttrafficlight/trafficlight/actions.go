@@ -3,8 +3,6 @@ package trafficlight
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 
 func (m *trafficLightStruct) enterRed() {
@@ -31,6 +29,14 @@ func (m *trafficLightStruct) stopFlashing()            {}
 func (m *trafficLightStruct) changeFlashingAnimation() {}
 func (m *trafficLightStruct) log(msg string)           {}
 
+func (m *trafficLightStruct) Save() []byte {
+	data, err := json.Marshal(m)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
 func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
 	data := marshalStruct{
 		FrameState: m._state_,
@@ -43,19 +49,31 @@ func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
 	return j, nil
 }
 
-func (m *trafficLightStruct) UnmarshalJSON(data []byte) error {
-	unmarshalleddata := struct {
-		FrameState framelang.FrameState
-		FlashColor string
-	}{}
+func (m *trafficLightStruct) load(data []byte) error {
+	var marshal marshalStruct
 
-	err := json.Unmarshal(data, unmarshalleddata)
+	err := json.Unmarshal(data, &marshal)
 	if err != nil {
 		return err
 	}
-
-	m._state_ = unmarshalleddata.FrameState
-	m.flashColor = unmarshalleddata.FlashColor
-
+	m._state_ = marshal.FrameState
+	m.flashColor = marshal.FlashColor
 	return nil
 }
+
+// func (m *trafficLightStruct) UnmarshalJSON(data []byte) error {
+// 	unmarshalleddata := struct {
+// 		FrameState framelang.FrameState
+// 		FlashColor string
+// 	}{}
+
+// 	err := json.Unmarshal(data, unmarshalleddata)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	m._state_ = unmarshalleddata.FrameState
+// 	m.flashColor = unmarshalleddata.FlashColor
+
+// 	return nil
+// }

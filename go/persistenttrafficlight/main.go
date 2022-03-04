@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	trafficlight "github.com/frame-lang/frame-demos/persistenttrafficlight/trafficlight"
+	"github.com/frame-lang/frame-demos/persistenttrafficlight/trafficlight"
 )
 
 func main() {
@@ -28,6 +28,7 @@ func main() {
 				return
 			case <-ticker.C:
 				mom.Tick()
+				fmt.Println("tick")
 			}
 		}
 	}()

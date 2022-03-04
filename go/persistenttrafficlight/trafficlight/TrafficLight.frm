@@ -1,3 +1,4 @@
+#[marshal]
 #TrafficLight
 
     -interface-

@@ -1,7 +1,5 @@
 package trafficlight
 
-import "encoding/json"
-
 //	"fmt"
 
 type MOM struct {
@@ -22,8 +20,9 @@ func (mom *MOM) Start() {
 		// TODO
 		return
 	}
+
 	mom.m.Start()
-	mom.data, _ = json.Marshal(mom.m)
+	mom.data = mom.m.Save()
 	mom.m = nil
 }
 
@@ -35,6 +34,7 @@ func (mom *MOM) Stop() {
 		return
 	}
 	mom.m.Stop()
+	mom.m = nil
 }
 
 func (mom *MOM) Tick() {
@@ -44,8 +44,8 @@ func (mom *MOM) Tick() {
 		// TODO
 		return
 	}
-	//	json.Unmarshal(mom.data, mom.m)
+
 	mom.m.Tick()
-	mom.data, _ = json.Marshal(mom.m)
+	mom.data = mom.m.Save()
 	mom.m = nil
 }
