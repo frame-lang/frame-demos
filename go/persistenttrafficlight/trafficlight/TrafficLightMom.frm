@@ -12,23 +12,23 @@
         |>>| 
             trafficLight = New()
             trafficLight.Start()
-            -> $Waiting ^
-       |<| 
-            data = trafficLight.Save() 
-            trafficLight = nil ^
+            -> "Traffic Light\nStarted" $Saving ^
  
-    $Waiting 
-        |tick| -> $Working ^
-        |<<| -> $End ^
+    $Saving 
+        |>|
+            data = trafficLight.Save() 
+            trafficLight = nil 
+            -> "Saved" $Persisted ^
+
+    $Persisted 
+        |tick| -> "Tick" $Working ^
+        |<<| -> "Stop" $End ^
 
     $Working
         |>| 
             trafficLight = New() 
             trafficLight.Tick()
-            -> $Waiting ^
-       |<| 
-            data = trafficLight.Save() 
-            trafficLight = nil ^
+            -> "Done" $Saving ^
 
     $End
 

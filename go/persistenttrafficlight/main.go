@@ -26,8 +26,8 @@ func main() {
 				finished <- true
 				return
 			case <-ticker.C:
-				mom.Tick()
 				fmt.Println("tick")
+				mom.Tick()
 			}
 
 		}

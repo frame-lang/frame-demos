@@ -8,7 +8,8 @@ type MOMState uint
 
 const (
 	MOMState_new MOMState = iota
-	MOMState_waiting
+	MOMState_saving
+	MOMState_persisted
 	MOMState_working
 	MOMState_end
 )
@@ -57,8 +58,10 @@ func (m *mOMStruct) _mux_(e *framelang.FrameEvent) {
 	switch m._state_ {
 	case MOMState_new:
 		m._new_(e)
-	case MOMState_waiting:
-		m._waiting_(e)
+	case MOMState_saving:
+		m._saving_(e)
+	case MOMState_persisted:
+		m._persisted_(e)
 	case MOMState_working:
 		m._working_(e)
 	case MOMState_end:
@@ -73,21 +76,27 @@ func (m *mOMStruct) _new_(e *framelang.FrameEvent) {
 	case ">>":
 		m.trafficLight, _ = New(m, m.data)
 		m.trafficLight.Start()
-		m._transition_(MOMState_waiting)
-		return
-	case "<":
-		m.data = m.trafficLight.Save()
-		m.trafficLight = nil
+		m._transition_(MOMState_saving)
 		return
 	}
 }
 
-func (m *mOMStruct) _waiting_(e *framelang.FrameEvent) {
+func (m *mOMStruct) _saving_(e *framelang.FrameEvent) {
+	switch e.Msg {
+	case ">":
+		m.data = m.trafficLight.Save()
+		m.trafficLight = nil
+		m._transition_(MOMState_persisted)
+		return
+	}
+}
+
+func (m *mOMStruct) _persisted_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "tick":
 		m._transition_(MOMState_working)
 		return
-	case "stop":
+	case "<<":
 		m._transition_(MOMState_end)
 		return
 	}
@@ -98,11 +107,7 @@ func (m *mOMStruct) _working_(e *framelang.FrameEvent) {
 	case ">":
 		m.trafficLight, _ = New(m, m.data)
 		m.trafficLight.Tick()
-		m._transition_(MOMState_waiting)
-		return
-	case "<":
-		m.data = m.trafficLight.Save()
-		m.trafficLight = nil
+		m._transition_(MOMState_saving)
 		return
 	}
 }
