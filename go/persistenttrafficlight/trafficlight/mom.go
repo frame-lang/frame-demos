@@ -73,7 +73,6 @@ func (m *mOMStruct) _new_(e *framelang.FrameEvent) {
 	case ">>":
 		m.trafficLight, _ = New(m, m.data)
 		m.trafficLight.Start()
-		m.data = m.trafficLight.Save()
 		m._transition_(MOMState_waiting)
 		return
 	case "<":

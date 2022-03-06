@@ -12,7 +12,6 @@
         |>>| 
             trafficLight = New()
             trafficLight.Start()
-            data = trafficLight.Save()
             -> $Waiting ^
        |<| 
             data = trafficLight.Save() 

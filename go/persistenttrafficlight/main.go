@@ -29,6 +29,7 @@ func main() {
 				mom.Tick()
 				fmt.Println("tick")
 			}
+
 		}
 	}()
 
