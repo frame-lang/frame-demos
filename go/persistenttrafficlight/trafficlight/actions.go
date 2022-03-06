@@ -39,8 +39,8 @@ func (m *trafficLightStruct) Save() []byte {
 
 func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
 	data := marshalStruct{
-		FrameState: m._state_,
-		FlashColor: m.flashColor,
+		TrafficLightState: m._state_,
+		FlashColor:        m.flashColor,
 	}
 	j, err := json.Marshal(data)
 	if err != nil {
@@ -56,7 +56,7 @@ func (m *trafficLightStruct) load(data []byte) error {
 	if err != nil {
 		return err
 	}
-	m._state_ = marshal.FrameState
+	m._state_ = marshal.TrafficLightState
 	m.flashColor = marshal.FlashColor
 	return nil
 }
