@@ -22,8 +22,8 @@ type mOMStruct struct {
 
 func NewMOM() *mOMStruct {
 	m := &mOMStruct{}
-	// Verify MOMStruct implements actions interface
-	//	var _ actions = m
+	// Verify MOMStruct implements system interface
+	var _ MOM = m
 	m.trafficLight = nil
 	m.data = nil
 	return m
@@ -74,7 +74,7 @@ func (m *mOMStruct) _mux_(e *framelang.FrameEvent) {
 func (m *mOMStruct) _new_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
-		m.trafficLight, _ = New(m, m.data)
+		m.trafficLight, _ = New(m)
 		m.trafficLight.Start()
 		m._transition_(MOMState_saving)
 		return
@@ -105,7 +105,7 @@ func (m *mOMStruct) _persisted_(e *framelang.FrameEvent) {
 func (m *mOMStruct) _working_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
-		m.trafficLight, _ = New(m, m.data)
+		Load(m, m.data)
 		m.trafficLight.Tick()
 		m._transition_(MOMState_saving)
 		return
@@ -124,55 +124,3 @@ func (m *mOMStruct) _transition_(newState MOMState) {
 	m._state_ = newState
 	m._mux_(&framelang.FrameEvent{Msg: ">"})
 }
-
-// package trafficlight
-
-// //	"fmt"
-
-// type MOM struct {
-// 	m    TrafficLight
-// 	data []byte
-// }
-
-// func NewMOM() (*MOM, error) {
-// 	mom := &MOM{}
-// 	return mom, nil
-// }
-
-// //func (mom *MOM) Start(w http.ResponseWriter, r *http.Request) {
-// func (mom *MOM) Start() {
-// 	var err error
-// 	mom.m, err = New(mom, nil)
-// 	if err != nil {
-// 		// TODO
-// 		return
-// 	}
-
-// 	mom.m.Start()
-// 	mom.data = mom.m.Save()
-// 	mom.m = nil
-// }
-
-// func (mom *MOM) Stop() {
-// 	var err error
-// 	mom.m, err = New(mom, mom.data)
-// 	if err != nil {
-// 		// TODO
-// 		return
-// 	}
-// 	mom.m.Stop()
-// 	mom.m = nil
-// }
-
-// func (mom *MOM) Tick() {
-// 	var err error
-// 	mom.m, err = New(mom, mom.data)
-// 	if err != nil {
-// 		// TODO
-// 		return
-// 	}
-
-// 	mom.m.Tick()
-// 	mom.data = mom.m.Save()
-// 	mom.m = nil
-// }

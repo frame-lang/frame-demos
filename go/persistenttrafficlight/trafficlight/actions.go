@@ -49,18 +49,6 @@ func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
 	return j, nil
 }
 
-func (m *trafficLightStruct) load(data []byte) error {
-	var marshal marshalStruct
-
-	err := json.Unmarshal(data, &marshal)
-	if err != nil {
-		return err
-	}
-	m._state_ = marshal.TrafficLightState
-	m.flashColor = marshal.FlashColor
-	return nil
-}
-
 // func (m *trafficLightStruct) UnmarshalJSON(data []byte) error {
 // 	unmarshalleddata := struct {
 // 		FrameState framelang.FrameState

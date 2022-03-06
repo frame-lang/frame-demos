@@ -1,6 +1,8 @@
 package trafficlight
 
 import (
+	"encoding/json"
+
 	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 
@@ -16,16 +18,12 @@ const (
 	TrafficLightFrameState_working
 )
 
-type MarshalOut interface {
+type Marshal interface {
 	Save() []byte
 }
 
-type marshalIn interface {
-	load([]byte) error
-}
-
 type TrafficLight interface {
-	MarshalOut
+	Marshal
 	Start()
 	Stop()
 	Tick()
@@ -62,22 +60,36 @@ type marshalStruct struct {
 	FlashColor        string
 }
 
-func New(mom *mOMStruct, data []byte) (TrafficLight, error) {
+func New(mom *mOMStruct) (TrafficLight, error) {
 	m := &trafficLightStruct{}
 	m.mom = mom
 
 	// Validate interfaces
 	var _ TrafficLight = m
 	var _ actions = m
-	var _ marshalIn = m
-
-	// Load data
-	if data != nil {
-		m.load(data)
-	}
 
 	m.flashColor = ""
 	return m, nil
+}
+
+func Load(mom *mOMStruct, data []byte) error {
+	m := &trafficLightStruct{}
+	m.mom = mom
+	m.mom.trafficLight = m
+
+	// Validate interfaces
+	var _ TrafficLight = m
+	var _ actions = m
+
+	var marshal marshalStruct
+
+	err := json.Unmarshal(data, &marshal)
+	if err != nil {
+		return err
+	}
+	m._state_ = marshal.TrafficLightState
+	m.flashColor = marshal.FlashColor
+	return nil
 }
 
 //===================== Interface Block ===================//
