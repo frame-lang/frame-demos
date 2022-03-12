@@ -13,8 +13,7 @@ func main() {
 	finished := make(chan bool)
 	mom := trafficlight.NewMOM()
 	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	// 	log.Fatal(err)	// }
 	ticker := time.NewTicker(1000 * time.Millisecond)
 	mom.Start()
 	go func() {

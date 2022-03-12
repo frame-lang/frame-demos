@@ -19,7 +19,7 @@ const (
 )
 
 type Marshal interface {
-	Save() []byte
+	Marshal() []byte
 }
 
 type TrafficLight interface {
@@ -60,7 +60,7 @@ type marshalStruct struct {
 	FlashColor        string
 }
 
-func New(mom *mOMStruct) (TrafficLight, error) {
+func New(mom *mOMStruct) TrafficLight {
 	m := &trafficLightStruct{}
 	m.mom = mom
 
@@ -69,13 +69,12 @@ func New(mom *mOMStruct) (TrafficLight, error) {
 	var _ actions = m
 
 	m.flashColor = ""
-	return m, nil
+	return m
 }
 
-func Load(mom *mOMStruct, data []byte) error {
+func Load(mom *mOMStruct, data []byte) TrafficLight {
 	m := &trafficLightStruct{}
 	m.mom = mom
-	m.mom.trafficLight = m
 
 	// Validate interfaces
 	var _ TrafficLight = m
@@ -85,14 +84,38 @@ func Load(mom *mOMStruct, data []byte) error {
 
 	err := json.Unmarshal(data, &marshal)
 	if err != nil {
-		return err
+		return nil
 	}
+
 	m._state_ = marshal.TrafficLightState
 	m.flashColor = marshal.FlashColor
-	return nil
+	return m
+}
+
+func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
+	data := marshalStruct{
+		TrafficLightState: m._state_,
+		FlashColor:        m.flashColor,
+	}
+
+	return json.Marshal(data)
+
+	// j, err := json.Marshal(data)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return j, nil
 }
 
 //===================== Interface Block ===================//
+
+func (m *trafficLightStruct) Marshal() []byte {
+	data, err := json.Marshal(m)
+	if err != nil {
+		return nil
+	}
+	return data
+}
 
 func (m *trafficLightStruct) Start() {
 	e := framelang.FrameEvent{Msg: ">>"}

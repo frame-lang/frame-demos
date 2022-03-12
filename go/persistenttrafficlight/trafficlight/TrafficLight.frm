@@ -1,4 +1,14 @@
-#[marshal]
+```
+package trafficlight 
+
+import (
+	"encoding/json"
+
+	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
+)
+```
+#[derive(MOM,Marshal)]
+#[stateType="TrafficLightFrameState"]
 #TrafficLight
 
     -interface-
@@ -79,6 +89,5 @@
     -domain-
 
     var flashColor:string = ""
-    var mom:`*MOM` = nil
-    var ticker:`*time.Ticker` = nil 
+
 ##

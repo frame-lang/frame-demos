@@ -1,7 +1,6 @@
 package trafficlight
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
@@ -28,26 +27,6 @@ func (m *trafficLightStruct) startFlashing()           {}
 func (m *trafficLightStruct) stopFlashing()            {}
 func (m *trafficLightStruct) changeFlashingAnimation() {}
 func (m *trafficLightStruct) log(msg string)           {}
-
-func (m *trafficLightStruct) Save() []byte {
-	data, err := json.Marshal(m)
-	if err != nil {
-		return nil
-	}
-	return data
-}
-
-func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
-	data := marshalStruct{
-		TrafficLightState: m._state_,
-		FlashColor:        m.flashColor,
-	}
-	j, err := json.Marshal(data)
-	if err != nil {
-		return nil, err
-	}
-	return j, nil
-}
 
 // func (m *trafficLightStruct) UnmarshalJSON(data []byte) error {
 // 	unmarshalleddata := struct {

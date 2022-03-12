@@ -16,7 +16,7 @@
  
     $Saving 
         |>|
-            data = trafficLight.Save() 
+            data = trafficLight.Marshal() 
             trafficLight = nil 
             -> "Saved" $Persisted ^
 
