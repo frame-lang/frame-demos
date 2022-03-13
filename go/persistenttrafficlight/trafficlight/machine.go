@@ -9,13 +9,13 @@ import (
 type TrafficLightFrameState uint
 
 const (
-	TrafficLightFrameState_begin TrafficLightFrameState = iota
-	TrafficLightFrameState_red
-	TrafficLightFrameState_green
-	TrafficLightFrameState_yellow
-	TrafficLightFrameState_flashingRed
-	TrafficLightFrameState_end
-	TrafficLightFrameState_working
+	TrafficLightFrameState_Begin TrafficLightFrameState = iota
+	TrafficLightFrameState_Red
+	TrafficLightFrameState_Green
+	TrafficLightFrameState_Yellow
+	TrafficLightFrameState_FlashingRed
+	TrafficLightFrameState_End
+	TrafficLightFrameState_Working
 )
 
 type Marshal interface {
@@ -52,7 +52,6 @@ type trafficLightStruct struct {
 	mom        *mOMStruct
 	_state_    TrafficLightFrameState
 	flashColor string
-	//	ticker     *time.Ticker
 }
 
 type marshalStruct struct {
@@ -68,7 +67,9 @@ func NewTrafficLight(mom *mOMStruct) TrafficLight {
 	var _ TrafficLight = m
 	var _ actions = m
 
+	// Initialize domain
 	m.flashColor = ""
+
 	return m
 }
 
@@ -80,16 +81,19 @@ func LoadTrafficLight(mom *mOMStruct, data []byte) TrafficLight {
 	var _ TrafficLight = m
 	var _ actions = m
 
+	// Unmarshal
 	var marshal marshalStruct
-
 	err := json.Unmarshal(data, &marshal)
 	if err != nil {
 		return nil
 	}
 
+	// Initialize machine
 	m._state_ = marshal.TrafficLightState
 	m.flashColor = marshal.FlashColor
+
 	return m
+
 }
 
 func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
@@ -97,17 +101,8 @@ func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
 		TrafficLightState: m._state_,
 		FlashColor:        m.flashColor,
 	}
-
 	return json.Marshal(data)
-
-	// j, err := json.Marshal(data)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// return j, nil
 }
-
-//===================== Interface Block ===================//
 
 func (m *trafficLightStruct) Marshal() []byte {
 	data, err := json.Marshal(m)
@@ -115,7 +110,10 @@ func (m *trafficLightStruct) Marshal() []byte {
 		return nil
 	}
 	return data
+
 }
+
+//===================== Interface Block ===================//
 
 func (m *trafficLightStruct) Start() {
 	e := framelang.FrameEvent{Msg: ">>"}
@@ -146,74 +144,74 @@ func (m *trafficLightStruct) SystemRestart() {
 
 func (m *trafficLightStruct) _mux_(e *framelang.FrameEvent) {
 	switch m._state_ {
-	case TrafficLightFrameState_begin:
-		m._begin_(e)
-	case TrafficLightFrameState_red:
-		m._red_(e)
-	case TrafficLightFrameState_green:
-		m._green_(e)
-	case TrafficLightFrameState_yellow:
-		m._yellow_(e)
-	case TrafficLightFrameState_flashingRed:
-		m._flashingRed_(e)
-	case TrafficLightFrameState_end:
-		m._end_(e)
-	case TrafficLightFrameState_working:
-		m._working_(e)
+	case TrafficLightFrameState_Begin:
+		m._TrafficLightFrameState_Begin_(e)
+	case TrafficLightFrameState_Red:
+		m._TrafficLightFrameState_Red_(e)
+	case TrafficLightFrameState_Green:
+		m._TrafficLightFrameState_Green_(e)
+	case TrafficLightFrameState_Yellow:
+		m._TrafficLightFrameState_Yellow_(e)
+	case TrafficLightFrameState_FlashingRed:
+		m._TrafficLightFrameState_FlashingRed_(e)
+	case TrafficLightFrameState_End:
+		m._TrafficLightFrameState_End_(e)
+	case TrafficLightFrameState_Working:
+		m._TrafficLightFrameState_Working_(e)
 	}
 }
 
 //===================== Machine Block ===================//
 
-func (m *trafficLightStruct) _begin_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_Begin_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
 		m.startWorkingTimer()
-		m._transition_(TrafficLightFrameState_red)
+		m._transition_(TrafficLightFrameState_Red)
 		return
 	}
 }
 
-func (m *trafficLightStruct) _red_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_Red_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.enterRed()
 		return
 	case "tick":
-		m._transition_(TrafficLightFrameState_green)
+		m._transition_(TrafficLightFrameState_Green)
 		return
 	}
-	m._working_(e)
+	m._TrafficLightFrameState_Working_(e)
 
 }
 
-func (m *trafficLightStruct) _green_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_Green_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.enterGreen()
 		return
 	case "tick":
-		m._transition_(TrafficLightFrameState_yellow)
+		m._transition_(TrafficLightFrameState_Yellow)
 		return
 	}
-	m._working_(e)
+	m._TrafficLightFrameState_Working_(e)
 
 }
 
-func (m *trafficLightStruct) _yellow_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_Yellow_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.enterYellow()
 		return
 	case "tick":
-		m._transition_(TrafficLightFrameState_red)
+		m._transition_(TrafficLightFrameState_Red)
 		return
 	}
-	m._working_(e)
+	m._TrafficLightFrameState_Working_(e)
 
 }
 
-func (m *trafficLightStruct) _flashingRed_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_FlashingRed_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.enterFlashingRed()
@@ -229,15 +227,15 @@ func (m *trafficLightStruct) _flashingRed_(e *framelang.FrameEvent) {
 		m.changeFlashingAnimation()
 		return
 	case "systemRestart":
-		m._transition_(TrafficLightFrameState_red)
+		m._transition_(TrafficLightFrameState_Red)
 		return
 	case "stop":
-		m._transition_(TrafficLightFrameState_end)
+		m._transition_(TrafficLightFrameState_End)
 		return
 	}
 }
 
-func (m *trafficLightStruct) _end_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_End_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.stopWorkingTimer()
@@ -245,13 +243,13 @@ func (m *trafficLightStruct) _end_(e *framelang.FrameEvent) {
 	}
 }
 
-func (m *trafficLightStruct) _working_(e *framelang.FrameEvent) {
+func (m *trafficLightStruct) _TrafficLightFrameState_Working_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "stop":
-		m._transition_(TrafficLightFrameState_end)
+		m._transition_(TrafficLightFrameState_End)
 		return
 	case "systemError":
-		m._transition_(TrafficLightFrameState_flashingRed)
+		m._transition_(TrafficLightFrameState_FlashingRed)
 		return
 	}
 }
