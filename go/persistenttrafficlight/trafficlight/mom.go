@@ -74,7 +74,7 @@ func (m *mOMStruct) _mux_(e *framelang.FrameEvent) {
 func (m *mOMStruct) _new_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
-		m.trafficLight = New(m)
+		m.trafficLight = NewTrafficLight(m)
 		m.trafficLight.Start()
 		m._transition_(MOMState_saving)
 		return
@@ -105,7 +105,7 @@ func (m *mOMStruct) _persisted_(e *framelang.FrameEvent) {
 func (m *mOMStruct) _working_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
-		m.trafficLight = Load(m, m.data)
+		m.trafficLight = LoadTrafficLight(m, m.data)
 		m.trafficLight.Tick()
 		m._transition_(MOMState_saving)
 		return

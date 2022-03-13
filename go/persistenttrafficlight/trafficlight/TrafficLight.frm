@@ -1,5 +1,5 @@
 ```
-package trafficlight 
+package trafficlight
 
 import (
 	"encoding/json"
@@ -7,7 +7,7 @@ import (
 	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 ```
-#[derive(MOM,Marshal)]
+#[derive(Managed,Marshal)]
 #[stateType="TrafficLightFrameState"]
 #TrafficLight
 

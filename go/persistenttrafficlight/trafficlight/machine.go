@@ -60,7 +60,7 @@ type marshalStruct struct {
 	FlashColor        string
 }
 
-func New(mom *mOMStruct) TrafficLight {
+func NewTrafficLight(mom *mOMStruct) TrafficLight {
 	m := &trafficLightStruct{}
 	m.mom = mom
 
@@ -72,7 +72,7 @@ func New(mom *mOMStruct) TrafficLight {
 	return m
 }
 
-func Load(mom *mOMStruct, data []byte) TrafficLight {
+func LoadTrafficLight(mom *mOMStruct, data []byte) TrafficLight {
 	m := &trafficLightStruct{}
 	m.mom = mom
 
