@@ -1,3 +1,13 @@
+```
+package trafficlight
+
+import (
+	"encoding/json"
+
+	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
+)
+```
+
 #MOM
 
     -interface-
@@ -10,7 +20,7 @@
 
     $New 
         |>>| 
-            trafficLight = New()
+            trafficLight = NewTrafficLight(#)
             trafficLight.Start()
             -> "Traffic Light\nStarted" $Saving ^
  
@@ -26,7 +36,7 @@
 
     $Working
         |>| 
-            trafficLight = New() 
+            trafficLight = LoadTrafficLight(# data) 
             trafficLight.Tick()
             -> "Done" $Saving ^
 
@@ -36,4 +46,5 @@
 
     var trafficLight:TrafficLight = null
     var data:`[]byte` = null
+
 ##

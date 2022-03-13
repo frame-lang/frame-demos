@@ -7,12 +7,18 @@ import (
 type MOMState uint
 
 const (
-	MOMState_new MOMState = iota
-	MOMState_saving
-	MOMState_persisted
-	MOMState_working
-	MOMState_end
+	MOMState_New MOMState = iota
+	MOMState_Saving
+	MOMState_Persisted
+	MOMState_Working
+	MOMState_End
 )
+
+type MOM interface {
+	Start()
+	Stop()
+	Tick()
+}
 
 type mOMStruct struct {
 	_state_      MOMState
@@ -20,22 +26,20 @@ type mOMStruct struct {
 	data         []byte
 }
 
-func NewMOM() *mOMStruct {
+func NewMOM() MOM {
 	m := &mOMStruct{}
-	// Verify MOMStruct implements system interface
+
+	// Validate interfaces
 	var _ MOM = m
+
+	// Initialize domain
 	m.trafficLight = nil
 	m.data = nil
+
 	return m
 }
 
 //===================== Interface Block ===================//
-
-type MOM interface {
-	Start()
-	Stop()
-	Tick()
-}
 
 func (m *mOMStruct) Start() {
 	e := framelang.FrameEvent{Msg: ">>"}
@@ -56,63 +60,68 @@ func (m *mOMStruct) Tick() {
 
 func (m *mOMStruct) _mux_(e *framelang.FrameEvent) {
 	switch m._state_ {
-	case MOMState_new:
-		m._new_(e)
-	case MOMState_saving:
-		m._saving_(e)
-	case MOMState_persisted:
-		m._persisted_(e)
-	case MOMState_working:
-		m._working_(e)
-	case MOMState_end:
-		m._end_(e)
+	case MOMState_New:
+		m._MOMState_New_(e)
+	case MOMState_Saving:
+		m._MOMState_Saving_(e)
+	case MOMState_Persisted:
+		m._MOMState_Persisted_(e)
+	case MOMState_Working:
+		m._MOMState_Working_(e)
+	case MOMState_End:
+		m._MOMState_End_(e)
 	}
 }
 
 //===================== Machine Block ===================//
 
-func (m *mOMStruct) _new_(e *framelang.FrameEvent) {
+func (m *mOMStruct) _MOMState_New_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
 		m.trafficLight = NewTrafficLight(m)
 		m.trafficLight.Start()
-		m._transition_(MOMState_saving)
+		// Traffic Light\nStarted
+		m._transition_(MOMState_Saving)
 		return
 	}
 }
 
-func (m *mOMStruct) _saving_(e *framelang.FrameEvent) {
+func (m *mOMStruct) _MOMState_Saving_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.data = m.trafficLight.Marshal()
 		m.trafficLight = nil
-		m._transition_(MOMState_persisted)
+		// Saved
+		m._transition_(MOMState_Persisted)
 		return
 	}
 }
 
-func (m *mOMStruct) _persisted_(e *framelang.FrameEvent) {
+func (m *mOMStruct) _MOMState_Persisted_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "tick":
-		m._transition_(MOMState_working)
+		// Tick
+		m._transition_(MOMState_Working)
 		return
 	case "<<":
-		m._transition_(MOMState_end)
+		// Stop
+		m._transition_(MOMState_End)
 		return
 	}
 }
 
-func (m *mOMStruct) _working_(e *framelang.FrameEvent) {
+func (m *mOMStruct) _MOMState_Working_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.trafficLight = LoadTrafficLight(m, m.data)
 		m.trafficLight.Tick()
-		m._transition_(MOMState_saving)
+		// Done
+		m._transition_(MOMState_Saving)
 		return
 	}
 }
 
-func (m *mOMStruct) _end_(e *framelang.FrameEvent) {
+func (m *mOMStruct) _MOMState_End_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	}
 }
