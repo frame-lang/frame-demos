@@ -2,8 +2,6 @@
 package trafficlight
 
 import (
-	"encoding/json"
-
 	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 ```
@@ -14,8 +12,21 @@ import (
 
     start @(|>>|)
     stop @(|<<|)
-    tick 
-    
+    tick    
+    enterRed
+    enterGreen
+    enterYellow
+    enterFlashingRed
+    exitFlashingRed
+    startWorkingTimer
+    stopWorkingTimer
+    startFlashingTimer
+    stopFlashingTimer
+    changeColor [color:string]
+    startFlashing
+    stopFlashing
+    changeFlashingAnimation
+    log [msg:string]
     -machine-
 
     $New 
@@ -34,13 +45,46 @@ import (
         |tick| -> "Tick" $Working ^
         |<<| -> "Stop" $End ^
 
-    $Working
+    $Working => $TrafficLightApi
         |>| 
             trafficLight = LoadTrafficLight(# data) 
             trafficLight.Tick()
             -> "Done" $Saving ^
 
+    $TrafficLightApi
+        |enterRed| enterRed() ^
+        |enterGreen| enterGreen()  ^
+        |enterYellow| enterYellow() ^
+        |enterFlashingRed| enterFlashingRed() ^
+        |exitFlashingRed| exitFlashingRed() ^
+        |startWorkingTimer| startWorkingTimer() ^
+        |stopWorkingTimer| stopWorkingTimer() ^
+        |startFlashingTimer| startFlashingTimer() ^
+        |stopFlashingTimer| stopFlashingTimer() ^
+        |changeColor| [color:string] changeColor(color) ^
+        |startFlashing| startFlashing() ^
+        |stopFlashing| stopFlashing() ^
+        |changeFlashingAnimation| changeFlashingAnimation() ^
+        |log| [msg:string] log(msg) ^
+
     $End
+
+    -actions-
+
+    enterRed
+    enterGreen
+    enterYellow
+    enterFlashingRed
+    exitFlashingRed
+    startWorkingTimer
+    stopWorkingTimer
+    startFlashingTimer
+    stopFlashingTimer
+    changeColor [color:string]
+    startFlashing
+    stopFlashing
+    changeFlashingAnimation
+    log [msg:string]
 
     -domain-
 

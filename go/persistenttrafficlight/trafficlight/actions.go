@@ -5,13 +5,13 @@ import (
 )
 
 func (m *trafficLightStruct) enterRed() {
-	fmt.Println("enterRed()")
+	m.mom.EnterRed()
 }
 func (m *trafficLightStruct) enterGreen() {
-	fmt.Println("enterGreen()")
+	m.mom.EnterGreen()
 }
 func (m *trafficLightStruct) enterYellow() {
-	fmt.Println("enterYellow()")
+	m.mom.EnterYellow()
 }
 func (m *trafficLightStruct) enterFlashingRed() {}
 func (m *trafficLightStruct) exitFlashingRed()  {}
@@ -28,19 +28,17 @@ func (m *trafficLightStruct) stopFlashing()            {}
 func (m *trafficLightStruct) changeFlashingAnimation() {}
 func (m *trafficLightStruct) log(msg string)           {}
 
-// func (m *trafficLightStruct) UnmarshalJSON(data []byte) error {
-// 	unmarshalleddata := struct {
-// 		FrameState framelang.FrameState
-// 		FlashColor string
-// 	}{}
-
-// 	err := json.Unmarshal(data, unmarshalleddata)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	m._state_ = unmarshalleddata.FrameState
-// 	m.flashColor = unmarshalleddata.FlashColor
-
-// 	return nil
-// }
+func (m *mOMStruct) enterRed()                { fmt.Println("enterRed()") }
+func (m *mOMStruct) enterGreen()              { fmt.Println("enterGreen()") }
+func (m *mOMStruct) enterYellow()             { fmt.Println("enterYellow()") }
+func (m *mOMStruct) enterFlashingRed()        {}
+func (m *mOMStruct) exitFlashingRed()         {}
+func (m *mOMStruct) startWorkingTimer()       {}
+func (m *mOMStruct) stopWorkingTimer()        {}
+func (m *mOMStruct) startFlashingTimer()      {}
+func (m *mOMStruct) stopFlashingTimer()       {}
+func (m *mOMStruct) changeColor(color string) {}
+func (m *mOMStruct) startFlashing()           {}
+func (m *mOMStruct) stopFlashing()            {}
+func (m *mOMStruct) changeFlashingAnimation() {}
+func (m *mOMStruct) log(msg string)           {}
