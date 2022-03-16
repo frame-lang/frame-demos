@@ -28,17 +28,17 @@ func (m *trafficLightStruct) stopFlashing()            {}
 func (m *trafficLightStruct) changeFlashingAnimation() {}
 func (m *trafficLightStruct) log(msg string)           {}
 
-func (m *mOMStruct) enterRed()                { fmt.Println("enterRed()") }
-func (m *mOMStruct) enterGreen()              { fmt.Println("enterGreen()") }
-func (m *mOMStruct) enterYellow()             { fmt.Println("enterYellow()") }
-func (m *mOMStruct) enterFlashingRed()        {}
-func (m *mOMStruct) exitFlashingRed()         {}
-func (m *mOMStruct) startWorkingTimer()       {}
-func (m *mOMStruct) stopWorkingTimer()        {}
-func (m *mOMStruct) startFlashingTimer()      {}
-func (m *mOMStruct) stopFlashingTimer()       {}
-func (m *mOMStruct) changeColor(color string) {}
-func (m *mOMStruct) startFlashing()           {}
-func (m *mOMStruct) stopFlashing()            {}
-func (m *mOMStruct) changeFlashingAnimation() {}
-func (m *mOMStruct) log(msg string)           {}
+func (m *trafficLightMomStruct) enterRed()                { fmt.Println("enterRed()") }
+func (m *trafficLightMomStruct) enterGreen()              { fmt.Println("enterGreen()") }
+func (m *trafficLightMomStruct) enterYellow()             { fmt.Println("enterYellow()") }
+func (m *trafficLightMomStruct) enterFlashingRed()        {}
+func (m *trafficLightMomStruct) exitFlashingRed()         {}
+func (m *trafficLightMomStruct) startWorkingTimer()       {}
+func (m *trafficLightMomStruct) stopWorkingTimer()        {}
+func (m *trafficLightMomStruct) startFlashingTimer()      {}
+func (m *trafficLightMomStruct) stopFlashingTimer()       {}
+func (m *trafficLightMomStruct) changeColor(color string) {}
+func (m *trafficLightMomStruct) startFlashing()           {}
+func (m *trafficLightMomStruct) stopFlashing()            {}
+func (m *trafficLightMomStruct) changeFlashingAnimation() {}
+func (m *trafficLightMomStruct) log(msg string)           {}

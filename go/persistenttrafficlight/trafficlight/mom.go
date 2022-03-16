@@ -4,18 +4,18 @@ import (
 	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 
-type MOMState uint
+type TrafficLightMomState uint
 
 const (
-	MOMState_New MOMState = iota
-	MOMState_Saving
-	MOMState_Persisted
-	MOMState_Working
-	MOMState_TrafficLightApi
-	MOMState_End
+	TrafficLightMomState_New TrafficLightMomState = iota
+	TrafficLightMomState_Saving
+	TrafficLightMomState_Persisted
+	TrafficLightMomState_Working
+	TrafficLightMomState_TrafficLightApi
+	TrafficLightMomState_End
 )
 
-type MOM interface {
+type TrafficLightMom interface {
 	Start()
 	Stop()
 	Tick()
@@ -35,7 +35,7 @@ type MOM interface {
 	Log(msg string)
 }
 
-type MOM_actions interface {
+type TrafficLightMom_actions interface {
 	enterRed()
 	enterGreen()
 	enterYellow()
@@ -52,18 +52,18 @@ type MOM_actions interface {
 	log(msg string)
 }
 
-type mOMStruct struct {
-	_state_      MOMState
+type trafficLightMomStruct struct {
+	_state_      TrafficLightMomState
 	trafficLight TrafficLight
 	data         []byte
 }
 
-func NewMOM() MOM {
-	m := &mOMStruct{}
+func NewTrafficLightMom() TrafficLightMom {
+	m := &trafficLightMomStruct{}
 
 	// Validate interfaces
-	var _ MOM = m
-	var _ MOM_actions = m
+	var _ TrafficLightMom = m
+	var _ TrafficLightMom_actions = m
 
 	// Initialize domain
 	m.trafficLight = nil
@@ -74,89 +74,89 @@ func NewMOM() MOM {
 
 //===================== Interface Block ===================//
 
-func (m *mOMStruct) Start() {
+func (m *trafficLightMomStruct) Start() {
 	e := framelang.FrameEvent{Msg: ">>"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) Stop() {
+func (m *trafficLightMomStruct) Stop() {
 	e := framelang.FrameEvent{Msg: "<<"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) Tick() {
+func (m *trafficLightMomStruct) Tick() {
 	e := framelang.FrameEvent{Msg: "tick"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) EnterRed() {
+func (m *trafficLightMomStruct) EnterRed() {
 	e := framelang.FrameEvent{Msg: "enterRed"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) EnterGreen() {
+func (m *trafficLightMomStruct) EnterGreen() {
 	e := framelang.FrameEvent{Msg: "enterGreen"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) EnterYellow() {
+func (m *trafficLightMomStruct) EnterYellow() {
 	e := framelang.FrameEvent{Msg: "enterYellow"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) EnterFlashingRed() {
+func (m *trafficLightMomStruct) EnterFlashingRed() {
 	e := framelang.FrameEvent{Msg: "enterFlashingRed"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) ExitFlashingRed() {
+func (m *trafficLightMomStruct) ExitFlashingRed() {
 	e := framelang.FrameEvent{Msg: "exitFlashingRed"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) StartWorkingTimer() {
+func (m *trafficLightMomStruct) StartWorkingTimer() {
 	e := framelang.FrameEvent{Msg: "startWorkingTimer"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) StopWorkingTimer() {
+func (m *trafficLightMomStruct) StopWorkingTimer() {
 	e := framelang.FrameEvent{Msg: "stopWorkingTimer"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) StartFlashingTimer() {
+func (m *trafficLightMomStruct) StartFlashingTimer() {
 	e := framelang.FrameEvent{Msg: "startFlashingTimer"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) StopFlashingTimer() {
+func (m *trafficLightMomStruct) StopFlashingTimer() {
 	e := framelang.FrameEvent{Msg: "stopFlashingTimer"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) ChangeColor(color string) {
+func (m *trafficLightMomStruct) ChangeColor(color string) {
 	params := make(map[string]interface{})
 	params["color"] = color
 	e := framelang.FrameEvent{Msg: "changeColor", Params: params}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) StartFlashing() {
+func (m *trafficLightMomStruct) StartFlashing() {
 	e := framelang.FrameEvent{Msg: "startFlashing"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) StopFlashing() {
+func (m *trafficLightMomStruct) StopFlashing() {
 	e := framelang.FrameEvent{Msg: "stopFlashing"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) ChangeFlashingAnimation() {
+func (m *trafficLightMomStruct) ChangeFlashingAnimation() {
 	e := framelang.FrameEvent{Msg: "changeFlashingAnimation"}
 	m._mux_(&e)
 }
 
-func (m *mOMStruct) Log(msg string) {
+func (m *trafficLightMomStruct) Log(msg string) {
 	params := make(map[string]interface{})
 	params["msg"] = msg
 	e := framelang.FrameEvent{Msg: "log", Params: params}
@@ -165,74 +165,74 @@ func (m *mOMStruct) Log(msg string) {
 
 //====================== Multiplexer ====================//
 
-func (m *mOMStruct) _mux_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _mux_(e *framelang.FrameEvent) {
 	switch m._state_ {
-	case MOMState_New:
-		m._MOMState_New_(e)
-	case MOMState_Saving:
-		m._MOMState_Saving_(e)
-	case MOMState_Persisted:
-		m._MOMState_Persisted_(e)
-	case MOMState_Working:
-		m._MOMState_Working_(e)
-	case MOMState_TrafficLightApi:
-		m._MOMState_TrafficLightApi_(e)
-	case MOMState_End:
-		m._MOMState_End_(e)
+	case TrafficLightMomState_New:
+		m._TrafficLightMomState_New_(e)
+	case TrafficLightMomState_Saving:
+		m._TrafficLightMomState_Saving_(e)
+	case TrafficLightMomState_Persisted:
+		m._TrafficLightMomState_Persisted_(e)
+	case TrafficLightMomState_Working:
+		m._TrafficLightMomState_Working_(e)
+	case TrafficLightMomState_TrafficLightApi:
+		m._TrafficLightMomState_TrafficLightApi_(e)
+	case TrafficLightMomState_End:
+		m._TrafficLightMomState_End_(e)
 	}
 }
 
 //===================== Machine Block ===================//
 
-func (m *mOMStruct) _MOMState_New_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _TrafficLightMomState_New_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
 		m.trafficLight = NewTrafficLight(m)
 		m.trafficLight.Start()
 		// Traffic Light\nStarted
-		m._transition_(MOMState_Saving)
+		m._transition_(TrafficLightMomState_Saving)
 		return
 	}
 }
 
-func (m *mOMStruct) _MOMState_Saving_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _TrafficLightMomState_Saving_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.data = m.trafficLight.Marshal()
 		m.trafficLight = nil
 		// Saved
-		m._transition_(MOMState_Persisted)
+		m._transition_(TrafficLightMomState_Persisted)
 		return
 	}
 }
 
-func (m *mOMStruct) _MOMState_Persisted_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _TrafficLightMomState_Persisted_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "tick":
 		// Tick
-		m._transition_(MOMState_Working)
+		m._transition_(TrafficLightMomState_Working)
 		return
 	case "<<":
 		// Stop
-		m._transition_(MOMState_End)
+		m._transition_(TrafficLightMomState_End)
 		return
 	}
 }
 
-func (m *mOMStruct) _MOMState_Working_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _TrafficLightMomState_Working_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.trafficLight = LoadTrafficLight(m, m.data)
 		m.trafficLight.Tick()
 		// Done
-		m._transition_(MOMState_Saving)
+		m._transition_(TrafficLightMomState_Saving)
 		return
 	}
-	m._MOMState_TrafficLightApi_(e)
+	m._TrafficLightMomState_TrafficLightApi_(e)
 
 }
 
-func (m *mOMStruct) _MOMState_TrafficLightApi_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _TrafficLightMomState_TrafficLightApi_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "enterRed":
 		m.enterRed()
@@ -279,14 +279,14 @@ func (m *mOMStruct) _MOMState_TrafficLightApi_(e *framelang.FrameEvent) {
 	}
 }
 
-func (m *mOMStruct) _MOMState_End_(e *framelang.FrameEvent) {
+func (m *trafficLightMomStruct) _TrafficLightMomState_End_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	}
 }
 
 //=============== Machinery and Mechanisms ==============//
 
-func (m *mOMStruct) _transition_(newState MOMState) {
+func (m *trafficLightMomStruct) _transition_(newState TrafficLightMomState) {
 	m._mux_(&framelang.FrameEvent{Msg: "<"})
 	m._state_ = newState
 	m._mux_(&framelang.FrameEvent{Msg: ">"})
@@ -294,20 +294,20 @@ func (m *mOMStruct) _transition_(newState MOMState) {
 
 /********************
 // Sample Actions Implementation
-package mom
+package trafficlightmom
 
-func (m *mOMStruct) enterRed()  {}
-func (m *mOMStruct) enterGreen()  {}
-func (m *mOMStruct) enterYellow()  {}
-func (m *mOMStruct) enterFlashingRed()  {}
-func (m *mOMStruct) exitFlashingRed()  {}
-func (m *mOMStruct) startWorkingTimer()  {}
-func (m *mOMStruct) stopWorkingTimer()  {}
-func (m *mOMStruct) startFlashingTimer()  {}
-func (m *mOMStruct) stopFlashingTimer()  {}
-func (m *mOMStruct) changeColor(color string)  {}
-func (m *mOMStruct) startFlashing()  {}
-func (m *mOMStruct) stopFlashing()  {}
-func (m *mOMStruct) changeFlashingAnimation()  {}
-func (m *mOMStruct) log(msg string)  {}
+func (m *trafficLightMomStruct) enterRed()  {}
+func (m *trafficLightMomStruct) enterGreen()  {}
+func (m *trafficLightMomStruct) enterYellow()  {}
+func (m *trafficLightMomStruct) enterFlashingRed()  {}
+func (m *trafficLightMomStruct) exitFlashingRed()  {}
+func (m *trafficLightMomStruct) startWorkingTimer()  {}
+func (m *trafficLightMomStruct) stopWorkingTimer()  {}
+func (m *trafficLightMomStruct) startFlashingTimer()  {}
+func (m *trafficLightMomStruct) stopFlashingTimer()  {}
+func (m *trafficLightMomStruct) changeColor(color string)  {}
+func (m *trafficLightMomStruct) startFlashing()  {}
+func (m *trafficLightMomStruct) stopFlashing()  {}
+func (m *trafficLightMomStruct) changeFlashingAnimation()  {}
+func (m *trafficLightMomStruct) log(msg string)  {}
 ********************/

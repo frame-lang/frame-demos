@@ -11,7 +11,7 @@ func main() {
 
 	stop := make(chan bool)
 	finished := make(chan bool)
-	mom := trafficlight.NewMOM()
+	mom := trafficlight.NewTrafficLightMom()
 	// if err != nil {
 	// 	log.Fatal(err)	// }
 	ticker := time.NewTicker(1000 * time.Millisecond)

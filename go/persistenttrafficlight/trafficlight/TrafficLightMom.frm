@@ -6,7 +6,7 @@ import (
 )
 ```
 
-#MOM
+#TrafficLightMom
 
     -interface-
 
