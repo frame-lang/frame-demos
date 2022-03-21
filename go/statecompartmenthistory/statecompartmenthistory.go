@@ -27,9 +27,9 @@ type HistoryStateContext_actions interface {
 }
 
 type historyStateContextStruct struct {
-	_state_       HistoryStateContextState
-	_stateStack_  *Stack
-	_compartment_ *HistoryStateContextCompartment
+	_compartment_     *HistoryStateContextCompartment
+	_nextCompartment_ *HistoryStateContextCompartment
+	_stateStack_      *Stack
 }
 
 func NewHistoryStateContext() HistoryStateContext {
@@ -72,7 +72,7 @@ func (m *historyStateContextStruct) Back() {
 //====================== Multiplexer ====================//
 
 func (m *historyStateContextStruct) _mux_(e *framelang.FrameEvent) {
-	switch m._state_ {
+	switch m._compartment_.State {
 	case HistoryStateContextState_Start:
 		m._HistoryStateContextState_Start_(e)
 	case HistoryStateContextState_S0:
@@ -82,6 +82,12 @@ func (m *historyStateContextStruct) _mux_(e *framelang.FrameEvent) {
 	case HistoryStateContextState_DeadEnd:
 		m._HistoryStateContextState_DeadEnd_(e)
 	}
+
+	for m._nextCompartment_ != nil {
+		nextCompartment := m._nextCompartment_
+		m._nextCompartment_ = nil
+		m._do_transition_(nextCompartment)
+	}
 }
 
 //===================== Machine Block ===================//
@@ -90,9 +96,9 @@ func (m *historyStateContextStruct) _HistoryStateContextState_Start_(e *framelan
 	switch e.Msg {
 	case ">>":
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_S0)
-
 		compartment.AddStateVar("enterMsg", "Enter S0")
-		m._transition_(compartment.State, compartment)
+
+		m._transition_(compartment)
 		return
 	}
 }
@@ -105,13 +111,13 @@ func (m *historyStateContextStruct) _HistoryStateContextState_S0_(e *framelang.F
 	case "switchState":
 		// Switch\nState
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_S1)
-		m._transition_(compartment.State, compartment)
+		m._transition_(compartment)
 		return
 	case "gotoDeadEnd":
 		m._stateStack_push_(m._compartment_)
 		// Goto\nDead End
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_DeadEnd)
-		m._transition_(compartment.State, compartment)
+		m._transition_(compartment)
 		return
 	}
 }
@@ -124,15 +130,15 @@ func (m *historyStateContextStruct) _HistoryStateContextState_S1_(e *framelang.F
 	case "switchState":
 		// Switch\nState
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_S0)
-
 		compartment.AddStateVar("enterMsg", "Enter S0")
-		m._transition_(compartment.State, compartment)
+
+		m._transition_(compartment)
 		return
 	case "gotoDeadEnd":
 		m._stateStack_push_(m._compartment_)
 		// Goto\nDead End
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_DeadEnd)
-		m._transition_(compartment.State, compartment)
+		m._transition_(compartment)
 		return
 	}
 }
@@ -145,19 +151,21 @@ func (m *historyStateContextStruct) _HistoryStateContextState_DeadEnd_(e *framel
 	case "back":
 		// Go Back
 		compartment := m._stateStack_pop_()
-		m._transition_(compartment.State, compartment)
+		m._transition_(compartment)
 		return
 	}
 }
 
 //=============== Machinery and Mechanisms ==============//
 
-func (m *historyStateContextStruct) _transition_(newState HistoryStateContextState, compartment *HistoryStateContextCompartment) {
-	m._mux_(&framelang.FrameEvent{Msg: "<"})
-	m._state_ = newState
-	m._compartment_ = compartment
-	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.GetEnterArgs(), Ret: nil})
+func (m *historyStateContextStruct) _transition_(compartment *HistoryStateContextCompartment) {
+	m._nextCompartment_ = compartment
+}
 
+func (m *historyStateContextStruct) _do_transition_(nextCompartment *HistoryStateContextCompartment) {
+	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+	m._compartment_ = nextCompartment
+	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.GetEnterArgs(), Ret: nil})
 }
 
 func (m *historyStateContextStruct) _stateStack_push_(compartment *HistoryStateContextCompartment) {
@@ -169,11 +177,21 @@ func (m *historyStateContextStruct) _stateStack_pop_() *HistoryStateContextCompa
 	return compartment.(*HistoryStateContextCompartment)
 }
 
+/********************
+// Sample Actions Implementation
+package historystatecontext
+
+func (m *historyStateContextStruct) print(msg string)  {}
+********************/
+
+//=============== Compartment ==============//
+
 type HistoryStateContextCompartment struct {
 	State     HistoryStateContextState
 	StateArgs map[string]interface{}
 	StateVars map[string]interface{}
 	EnterArgs map[string]interface{}
+	ExitArgs  map[string]interface{}
 }
 
 func NewHistoryStateContextCompartment(state HistoryStateContextState) *HistoryStateContextCompartment {
@@ -181,6 +199,7 @@ func NewHistoryStateContextCompartment(state HistoryStateContextState) *HistoryS
 	c.StateArgs = make(map[string]interface{})
 	c.StateVars = make(map[string]interface{})
 	c.EnterArgs = make(map[string]interface{})
+	c.ExitArgs = make(map[string]interface{})
 	return c
 }
 
@@ -224,9 +243,18 @@ func (c *HistoryStateContextCompartment) GetEnterArgs() map[string]interface{} {
 	return c.EnterArgs
 }
 
-/********************
-// Sample Actions Implementation
-package historystatecontext
+func (c *HistoryStateContextCompartment) AddExitArg(name string, value interface{}) {
+	c.ExitArgs[name] = value
+}
 
-func (m *historyStateContextStruct) print(msg string)  {}
-********************/
+func (c *HistoryStateContextCompartment) SetExitArg(name string, value interface{}) {
+	c.ExitArgs[name] = value
+}
+
+func (c *HistoryStateContextCompartment) GetExitArg(name string) interface{} {
+	return c.ExitArgs[name]
+}
+
+func (c *HistoryStateContextCompartment) GetExitArgs() map[string]interface{} {
+	return c.ExitArgs
+}
