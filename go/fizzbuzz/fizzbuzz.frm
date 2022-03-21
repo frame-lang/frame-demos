@@ -16,7 +16,7 @@ import (
 
   $Begin
     |>>|
-      -> (1) "start" $Fizz ^
+        -> (1) "start" $Fizz ^
 
   $Fizz
     |>| [i:int]
