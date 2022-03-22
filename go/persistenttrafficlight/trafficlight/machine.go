@@ -49,14 +49,15 @@ type TrafficLight_actions interface {
 }
 
 type trafficLightStruct struct {
-	mom        TrafficLightMom
-	_state_    TrafficLightState
-	flashColor string
+	mom               TrafficLightMom
+	_compartment_     *TrafficLightCompartment
+	_nextCompartment_ *TrafficLightCompartment
+	flashColor        string
 }
 
 type marshalStruct struct {
-	TrafficLightState TrafficLightState
-	FlashColor        string
+	TrafficLightCompartment
+	FlashColor string
 }
 
 func NewTrafficLight(mom TrafficLightMom) TrafficLight {
@@ -66,6 +67,7 @@ func NewTrafficLight(mom TrafficLightMom) TrafficLight {
 	// Validate interfaces
 	var _ TrafficLight = m
 	var _ TrafficLight_actions = m
+	m._compartment_ = NewTrafficLightCompartment(TrafficLightState_Begin)
 
 	// Initialize domain
 	m.flashColor = ""
@@ -89,7 +91,8 @@ func LoadTrafficLight(mom TrafficLightMom, data []byte) TrafficLight {
 	}
 
 	// Initialize machine
-	m._state_ = marshal.TrafficLightState
+	m._compartment_ = &marshal.TrafficLightCompartment
+
 	m.flashColor = marshal.FlashColor
 
 	return m
@@ -98,8 +101,8 @@ func LoadTrafficLight(mom TrafficLightMom, data []byte) TrafficLight {
 
 func (m *trafficLightStruct) MarshalJSON() ([]byte, error) {
 	data := marshalStruct{
-		TrafficLightState: m._state_,
-		FlashColor:        m.flashColor,
+		TrafficLightCompartment: *m._compartment_,
+		FlashColor:              m.flashColor,
 	}
 	return json.Marshal(data)
 }
@@ -143,7 +146,7 @@ func (m *trafficLightStruct) SystemRestart() {
 //====================== Multiplexer ====================//
 
 func (m *trafficLightStruct) _mux_(e *framelang.FrameEvent) {
-	switch m._state_ {
+	switch m._compartment_.State {
 	case TrafficLightState_Begin:
 		m._TrafficLightState_Begin_(e)
 	case TrafficLightState_Red:
@@ -159,6 +162,12 @@ func (m *trafficLightStruct) _mux_(e *framelang.FrameEvent) {
 	case TrafficLightState_Working:
 		m._TrafficLightState_Working_(e)
 	}
+
+	for m._nextCompartment_ != nil {
+		nextCompartment := m._nextCompartment_
+		m._nextCompartment_ = nil
+		m._do_transition_(nextCompartment)
+	}
 }
 
 //===================== Machine Block ===================//
@@ -167,7 +176,8 @@ func (m *trafficLightStruct) _TrafficLightState_Begin_(e *framelang.FrameEvent) 
 	switch e.Msg {
 	case ">>":
 		m.startWorkingTimer()
-		m._transition_(TrafficLightState_Red)
+		compartment := NewTrafficLightCompartment(TrafficLightState_Red)
+		m._transition_(compartment)
 		return
 	}
 }
@@ -178,7 +188,8 @@ func (m *trafficLightStruct) _TrafficLightState_Red_(e *framelang.FrameEvent) {
 		m.enterRed()
 		return
 	case "tick":
-		m._transition_(TrafficLightState_Green)
+		compartment := NewTrafficLightCompartment(TrafficLightState_Green)
+		m._transition_(compartment)
 		return
 	}
 	m._TrafficLightState_Working_(e)
@@ -191,7 +202,8 @@ func (m *trafficLightStruct) _TrafficLightState_Green_(e *framelang.FrameEvent) 
 		m.enterGreen()
 		return
 	case "tick":
-		m._transition_(TrafficLightState_Yellow)
+		compartment := NewTrafficLightCompartment(TrafficLightState_Yellow)
+		m._transition_(compartment)
 		return
 	}
 	m._TrafficLightState_Working_(e)
@@ -204,7 +216,8 @@ func (m *trafficLightStruct) _TrafficLightState_Yellow_(e *framelang.FrameEvent)
 		m.enterYellow()
 		return
 	case "tick":
-		m._transition_(TrafficLightState_Red)
+		compartment := NewTrafficLightCompartment(TrafficLightState_Red)
+		m._transition_(compartment)
 		return
 	}
 	m._TrafficLightState_Working_(e)
@@ -227,10 +240,12 @@ func (m *trafficLightStruct) _TrafficLightState_FlashingRed_(e *framelang.FrameE
 		m.changeFlashingAnimation()
 		return
 	case "systemRestart":
-		m._transition_(TrafficLightState_Red)
+		compartment := NewTrafficLightCompartment(TrafficLightState_Red)
+		m._transition_(compartment)
 		return
 	case "stop":
-		m._transition_(TrafficLightState_End)
+		compartment := NewTrafficLightCompartment(TrafficLightState_End)
+		m._transition_(compartment)
 		return
 	}
 }
@@ -246,20 +261,26 @@ func (m *trafficLightStruct) _TrafficLightState_End_(e *framelang.FrameEvent) {
 func (m *trafficLightStruct) _TrafficLightState_Working_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "stop":
-		m._transition_(TrafficLightState_End)
+		compartment := NewTrafficLightCompartment(TrafficLightState_End)
+		m._transition_(compartment)
 		return
 	case "systemError":
-		m._transition_(TrafficLightState_FlashingRed)
+		compartment := NewTrafficLightCompartment(TrafficLightState_FlashingRed)
+		m._transition_(compartment)
 		return
 	}
 }
 
 //=============== Machinery and Mechanisms ==============//
 
-func (m *trafficLightStruct) _transition_(newState TrafficLightState) {
-	m._mux_(&framelang.FrameEvent{Msg: "<"})
-	m._state_ = newState
-	m._mux_(&framelang.FrameEvent{Msg: ">"})
+func (m *trafficLightStruct) _transition_(compartment *TrafficLightCompartment) {
+	m._nextCompartment_ = compartment
+}
+
+func (m *trafficLightStruct) _do_transition_(nextCompartment *TrafficLightCompartment) {
+	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+	m._compartment_ = nextCompartment
+	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.GetEnterArgs(), Ret: nil})
 }
 
 /********************
@@ -281,3 +302,78 @@ func (m *trafficLightStruct) stopFlashing()  {}
 func (m *trafficLightStruct) changeFlashingAnimation()  {}
 func (m *trafficLightStruct) log(msg string)  {}
 ********************/
+
+//=============== Compartment ==============//
+
+type TrafficLightCompartment struct {
+	State     TrafficLightState
+	StateArgs map[string]interface{}
+	StateVars map[string]interface{}
+	EnterArgs map[string]interface{}
+	ExitArgs  map[string]interface{}
+}
+
+func NewTrafficLightCompartment(state TrafficLightState) *TrafficLightCompartment {
+	c := &TrafficLightCompartment{State: state}
+	c.StateArgs = make(map[string]interface{})
+	c.StateVars = make(map[string]interface{})
+	c.EnterArgs = make(map[string]interface{})
+	c.ExitArgs = make(map[string]interface{})
+	return c
+}
+
+func (c *TrafficLightCompartment) AddStateArg(name string, value interface{}) {
+	c.StateArgs[name] = value
+}
+
+func (c *TrafficLightCompartment) SetStateArg(name string, value interface{}) {
+	c.StateArgs[name] = value
+}
+
+func (c *TrafficLightCompartment) GetStateArg(name string) interface{} {
+	return c.StateArgs[name]
+}
+
+func (c *TrafficLightCompartment) AddStateVar(name string, value interface{}) {
+	c.StateVars[name] = value
+}
+
+func (c *TrafficLightCompartment) SetStateVar(name string, value interface{}) {
+	c.StateVars[name] = value
+}
+
+func (c *TrafficLightCompartment) GetStateVar(name string) interface{} {
+	return c.StateVars[name]
+}
+
+func (c *TrafficLightCompartment) AddEnterArg(name string, value interface{}) {
+	c.EnterArgs[name] = value
+}
+
+func (c *TrafficLightCompartment) SetEnterArg(name string, value interface{}) {
+	c.EnterArgs[name] = value
+}
+
+func (c *TrafficLightCompartment) GetEnterArg(name string) interface{} {
+	return c.EnterArgs[name]
+}
+
+func (c *TrafficLightCompartment) GetEnterArgs() map[string]interface{} {
+	return c.EnterArgs
+}
+
+func (c *TrafficLightCompartment) AddExitArg(name string, value interface{}) {
+	c.ExitArgs[name] = value
+}
+
+func (c *TrafficLightCompartment) SetExitArg(name string, value interface{}) {
+	c.ExitArgs[name] = value
+}
+
+func (c *TrafficLightCompartment) GetExitArg(name string) interface{} {
+	return c.ExitArgs[name]
+}
+
+func (c *TrafficLightCompartment) GetExitArgs() map[string]interface{} {
+	return c.ExitArgs
+}

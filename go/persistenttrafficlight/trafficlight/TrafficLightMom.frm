@@ -29,7 +29,7 @@ import (
     log [msg:string]
     -machine-
 
-    $New 
+    $New => $TrafficLightApi
         |>>| 
             trafficLight = NewTrafficLight(#)
             trafficLight.Start()
