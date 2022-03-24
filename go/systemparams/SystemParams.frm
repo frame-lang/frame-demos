@@ -5,7 +5,6 @@ import (
 	"fmt"
     "github.com/frame-lang/frame-demos/systemparams/trafficlight"
 )
-)
 ```
 
 #SystemParams[msg:string]

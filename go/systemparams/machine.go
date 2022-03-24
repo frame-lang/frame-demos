@@ -9,7 +9,6 @@ const (
 )
 
 type SystemParams interface {
-	A(msg string, i int)
 }
 
 type SystemParams_actions interface {
@@ -31,21 +30,12 @@ func NewSystemParams(msg string) SystemParams {
 
 	// Initialize domain
 
+	// Send system start event
 	params := make(map[string]interface{})
 	params["msg"] = msg
 	e := framelang.FrameEvent{Msg: ">", Params: params}
 	m._mux_(&e)
 	return m
-}
-
-//===================== Interface Block ===================//
-
-func (m *systemParamsStruct) A(msg string, i int) {
-	params := make(map[string]interface{})
-	params["msg"] = msg
-	params["i"] = i
-	e := framelang.FrameEvent{Msg: "a", Params: params}
-	m._mux_(&e)
 }
 
 //====================== Multiplexer ====================//
