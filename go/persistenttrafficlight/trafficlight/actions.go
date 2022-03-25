@@ -42,3 +42,5 @@ func (m *trafficLightMomStruct) startFlashing()           {}
 func (m *trafficLightMomStruct) stopFlashing()            {}
 func (m *trafficLightMomStruct) changeFlashingAnimation() {}
 func (m *trafficLightMomStruct) log(msg string)           {}
+func (m *trafficLightMomStruct) systemError()             {}
+func (m *trafficLightMomStruct) systemRestart()           {}

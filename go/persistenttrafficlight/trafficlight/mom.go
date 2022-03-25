@@ -32,6 +32,8 @@ type TrafficLightMom interface {
 	StartFlashing()
 	StopFlashing()
 	ChangeFlashingAnimation()
+	SystemError()
+	SystemRestart()
 	Log(msg string)
 }
 
@@ -49,6 +51,8 @@ type TrafficLightMom_actions interface {
 	startFlashing()
 	stopFlashing()
 	changeFlashingAnimation()
+	systemError()
+	systemRestart()
 	log(msg string)
 }
 
@@ -71,6 +75,9 @@ func NewTrafficLightMom() TrafficLightMom {
 	m.trafficLight = nil
 	m.data = nil
 
+	// Send system start event
+	e := framelang.FrameEvent{Msg: ">"}
+	m._mux_(&e)
 	return m
 }
 
@@ -158,6 +165,16 @@ func (m *trafficLightMomStruct) ChangeFlashingAnimation() {
 	m._mux_(&e)
 }
 
+func (m *trafficLightMomStruct) SystemError() {
+	e := framelang.FrameEvent{Msg: "systemError"}
+	m._mux_(&e)
+}
+
+func (m *trafficLightMomStruct) SystemRestart() {
+	e := framelang.FrameEvent{Msg: "systemRestart"}
+	m._mux_(&e)
+}
+
 func (m *trafficLightMomStruct) Log(msg string) {
 	params := make(map[string]interface{})
 	params["msg"] = msg
@@ -187,6 +204,10 @@ func (m *trafficLightMomStruct) _mux_(e *framelang.FrameEvent) {
 		nextCompartment := m._nextCompartment_
 		m._nextCompartment_ = nil
 		m._do_transition_(nextCompartment)
+		if m._compartment_._forwardEvent_ != nil {
+			m._mux_(m._compartment_._forwardEvent_)
+			m._compartment_._forwardEvent_ = nil
+		}
 	}
 }
 
@@ -197,6 +218,7 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_New_(e *framelang.FrameEve
 	case ">>":
 		m.trafficLight = NewTrafficLight(m)
 		m.trafficLight.Start()
+
 		// Traffic Light\nStarted
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Saving)
 		m._transition_(compartment)
@@ -211,6 +233,7 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_Saving_(e *framelang.Frame
 	case ">":
 		m.data = m.trafficLight.Marshal()
 		m.trafficLight = nil
+
 		// Saved
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Persisted)
 		m._transition_(compartment)
@@ -221,11 +244,21 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_Saving_(e *framelang.Frame
 func (m *trafficLightMomStruct) _TrafficLightMomState_Persisted_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case "tick":
+
 		// Tick
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Working)
+		compartment._forwardEvent_ = e
+		m._transition_(compartment)
+		return
+	case "systemError":
+
+		// System Error
+		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Working)
+		compartment._forwardEvent_ = e
 		m._transition_(compartment)
 		return
 	case "<<":
+
 		// Stop
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_End)
 		m._transition_(compartment)
@@ -237,7 +270,17 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_Working_(e *framelang.Fram
 	switch e.Msg {
 	case ">":
 		m.trafficLight = LoadTrafficLight(m, m.data)
+		return
+	case "tick":
 		m.trafficLight.Tick()
+
+		// Done
+		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Saving)
+		m._transition_(compartment)
+		return
+	case "systemError":
+		m.trafficLight.SystemError()
+
 		// Done
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Saving)
 		m._transition_(compartment)
@@ -288,6 +331,12 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_TrafficLightApi_(e *framel
 	case "changeFlashingAnimation":
 		m.changeFlashingAnimation()
 		return
+	case "systemError":
+		m.systemError()
+		return
+	case "systemRestart":
+		m.systemRestart()
+		return
 	case "log":
 		m.log(e.Params["msg"].(string))
 		return
@@ -296,7 +345,13 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_TrafficLightApi_(e *framel
 
 func (m *trafficLightMomStruct) _TrafficLightMomState_End_(e *framelang.FrameEvent) {
 	switch e.Msg {
+	case ">":
+		m.trafficLight = LoadTrafficLight(m, m.data)
+		m.trafficLight.Stop()
+		return
 	}
+	m._TrafficLightMomState_TrafficLightApi_(e)
+
 }
 
 //=============== Machinery and Mechanisms ==============//
@@ -328,17 +383,20 @@ func (m *trafficLightMomStruct) changeColor(color string)  {}
 func (m *trafficLightMomStruct) startFlashing()  {}
 func (m *trafficLightMomStruct) stopFlashing()  {}
 func (m *trafficLightMomStruct) changeFlashingAnimation()  {}
+func (m *trafficLightMomStruct) systemError()  {}
+func (m *trafficLightMomStruct) systemRestart()  {}
 func (m *trafficLightMomStruct) log(msg string)  {}
 ********************/
 
 //=============== Compartment ==============//
 
 type TrafficLightMomCompartment struct {
-	State     TrafficLightMomState
-	StateArgs map[string]interface{}
-	StateVars map[string]interface{}
-	EnterArgs map[string]interface{}
-	ExitArgs  map[string]interface{}
+	State          TrafficLightMomState
+	StateArgs      map[string]interface{}
+	StateVars      map[string]interface{}
+	EnterArgs      map[string]interface{}
+	ExitArgs       map[string]interface{}
+	_forwardEvent_ *framelang.FrameEvent
 }
 
 func NewTrafficLightMomCompartment(state TrafficLightMomState) *TrafficLightMomCompartment {

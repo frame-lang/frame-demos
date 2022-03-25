@@ -1,15 +1,11 @@
 ```
 package trafficlight
-
 import (
-	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
+    "github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 ```
-
 #TrafficLightMom
-
     -interface-
-
     start @(|>>|)
     stop @(|<<|)
     tick    
@@ -26,7 +22,10 @@ import (
     startFlashing
     stopFlashing
     changeFlashingAnimation
+    systemError
+    systemRestart
     log [msg:string]
+
     -machine-
 
     $New => $TrafficLightApi
@@ -42,14 +41,14 @@ import (
             -> "Saved" $Persisted ^
 
     $Persisted 
-        |tick| -> "Tick" $Working ^
+        |tick| -> ("hi") =>  "Tick" $Working ^
+        |systemError| -> ("hi") => "System Error" $Working ^
         |<<| -> "Stop" $End ^
 
     $Working => $TrafficLightApi
-        |>| 
-            trafficLight = LoadTrafficLight(# data) 
-            trafficLight.Tick()
-            -> "Done" $Saving ^
+        |>| [msg:string]    trafficLight = LoadTrafficLight(# data)  ^
+        |tick|  trafficLight.Tick() -> "Done" $Saving ^
+        |systemError| trafficLight.SystemError() -> "Done" $Saving ^
 
     $TrafficLightApi
         |enterRed| enterRed() ^
@@ -65,12 +64,15 @@ import (
         |startFlashing| startFlashing() ^
         |stopFlashing| stopFlashing() ^
         |changeFlashingAnimation| changeFlashingAnimation() ^
+        |systemError| systemError() ^
+        |systemRestart| systemRestart() ^
         |log| [msg:string] log(msg) ^
 
-    $End
-
+    $End => $TrafficLightApi
+        |>|
+            trafficLight = LoadTrafficLight(# data) 
+            trafficLight.Stop() ^
     -actions-
-
     enterRed
     enterGreen
     enterYellow
@@ -79,16 +81,15 @@ import (
     startWorkingTimer
     stopWorkingTimer
     startFlashingTimer
-    stopFlashingTimer
+    stopFlashingTimer   
     changeColor [color:string]
     startFlashing
     stopFlashing
     changeFlashingAnimation
+    systemError
+    systemRestart
     log [msg:string]
-
     -domain-
-
     var trafficLight:TrafficLight = null
     var data:`[]byte` = null
-
 ##
