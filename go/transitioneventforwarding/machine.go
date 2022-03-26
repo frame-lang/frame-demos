@@ -59,29 +59,61 @@ func (m *transitionEventForwardingStruct) _mux_(e *framelang.FrameEvent) {
 		m._TransitionEventForwardingState_Stop_(e)
 	}
 
+	// if m._nextCompartment_ != nil {
+	// 	nextCompartment := m._nextCompartment_
+	// 	m._nextCompartment_ = nil
+	// 	if nextCompartment._forwardEvent_ != nil {
+	// 		if nextCompartment._forwardEvent_.Msg == ">" {
+	// 			m._compartment_ = nextCompartment
+	// 			m._mux_(m._compartment_._forwardEvent_)
+	// 		} else {
+	// 			m._do_transition_(nextCompartment)
+	// 			if m._compartment_._forwardEvent_ != nil {
+	// 				m._mux_(m._compartment_._forwardEvent_)
+	// 				m._compartment_._forwardEvent_ = nil
+	// 			}
+	// 		}
+
+	// 	} else {
+	// 		m._do_transition_(nextCompartment)
+	// 		if m._compartment_._forwardEvent_ != nil {
+	// 			m._mux_(m._compartment_._forwardEvent_)
+	// 			m._compartment_._forwardEvent_ = nil
+	// 		}
+	// 	}
+	// 	m._compartment_._forwardEvent_ = nil
+	// }
+
+	// if m._nextCompartment_ != nil {
+	// 	nextCompartment := m._nextCompartment_
+	// 	m._nextCompartment_ = nil
+	// 	if nextCompartment._forwardEvent_ != nil &&
+	// 		nextCompartment._forwardEvent_.Msg == ">" {
+	// 		m._compartment_ = nextCompartment
+	// 		m._mux_(nextCompartment._forwardEvent_)
+	// 	} else {
+	// 		m._do_transition_(nextCompartment)
+	// 		if nextCompartment._forwardEvent_ != nil {
+	// 			m._mux_(nextCompartment._forwardEvent_)
+	// 		}
+	// 	}
+	// 	nextCompartment._forwardEvent_ = nil
+	// }
+
 	if m._nextCompartment_ != nil {
 		nextCompartment := m._nextCompartment_
 		m._nextCompartment_ = nil
-		if nextCompartment._forwardEvent_ != nil {
-			if nextCompartment._forwardEvent_.Msg == ">" {
-				m._compartment_ = nextCompartment
-				m._mux_(m._compartment_._forwardEvent_)
-			} else {
-				m._do_transition_(nextCompartment)
-				if m._compartment_._forwardEvent_ != nil {
-					m._mux_(m._compartment_._forwardEvent_)
-					m._compartment_._forwardEvent_ = nil
-				}
-			}
-
+		if nextCompartment._forwardEvent_ != nil &&
+			nextCompartment._forwardEvent_.Msg == ">" {
+			m._compartment_ = nextCompartment
+			m._mux_(nextCompartment._forwardEvent_)
 		} else {
 			m._do_transition_(nextCompartment)
-			if m._compartment_._forwardEvent_ != nil {
-				m._mux_(m._compartment_._forwardEvent_)
-				m._compartment_._forwardEvent_ = nil
+			if nextCompartment._forwardEvent_ != nil {
+				m._mux_(nextCompartment._forwardEvent_)
 			}
 		}
-		m._compartment_._forwardEvent_ = nil
+		nextCompartment._forwardEvent_ = nil
 	}
 }
 
