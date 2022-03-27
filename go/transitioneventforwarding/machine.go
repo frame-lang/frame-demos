@@ -59,52 +59,12 @@ func (m *transitionEventForwardingStruct) _mux_(e *framelang.FrameEvent) {
 		m._TransitionEventForwardingState_Stop_(e)
 	}
 
-	// if m._nextCompartment_ != nil {
-	// 	nextCompartment := m._nextCompartment_
-	// 	m._nextCompartment_ = nil
-	// 	if nextCompartment._forwardEvent_ != nil {
-	// 		if nextCompartment._forwardEvent_.Msg == ">" {
-	// 			m._compartment_ = nextCompartment
-	// 			m._mux_(m._compartment_._forwardEvent_)
-	// 		} else {
-	// 			m._do_transition_(nextCompartment)
-	// 			if m._compartment_._forwardEvent_ != nil {
-	// 				m._mux_(m._compartment_._forwardEvent_)
-	// 				m._compartment_._forwardEvent_ = nil
-	// 			}
-	// 		}
-
-	// 	} else {
-	// 		m._do_transition_(nextCompartment)
-	// 		if m._compartment_._forwardEvent_ != nil {
-	// 			m._mux_(m._compartment_._forwardEvent_)
-	// 			m._compartment_._forwardEvent_ = nil
-	// 		}
-	// 	}
-	// 	m._compartment_._forwardEvent_ = nil
-	// }
-
-	// if m._nextCompartment_ != nil {
-	// 	nextCompartment := m._nextCompartment_
-	// 	m._nextCompartment_ = nil
-	// 	if nextCompartment._forwardEvent_ != nil &&
-	// 		nextCompartment._forwardEvent_.Msg == ">" {
-	// 		m._compartment_ = nextCompartment
-	// 		m._mux_(nextCompartment._forwardEvent_)
-	// 	} else {
-	// 		m._do_transition_(nextCompartment)
-	// 		if nextCompartment._forwardEvent_ != nil {
-	// 			m._mux_(nextCompartment._forwardEvent_)
-	// 		}
-	// 	}
-	// 	nextCompartment._forwardEvent_ = nil
-	// }
-
 	if m._nextCompartment_ != nil {
 		nextCompartment := m._nextCompartment_
 		m._nextCompartment_ = nil
 		if nextCompartment._forwardEvent_ != nil &&
 			nextCompartment._forwardEvent_.Msg == ">" {
+			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
 			m._compartment_ = nextCompartment
 			m._mux_(nextCompartment._forwardEvent_)
 		} else {
@@ -123,17 +83,22 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_One_(e
 	switch e.Msg {
 	case ">":
 		if e.Params["cycles"].(int) == 0 {
+			m._compartment_.AddExitArg("msg", "stopping")
 
 			compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Stop)
 			compartment._forwardEvent_ = e
 			m._transition_(compartment)
 			return
 		} else {
+			m._compartment_.AddExitArg("msg", "keep going")
 
 			compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Two)
 			compartment._forwardEvent_ = e
 			m._transition_(compartment)
 		}
+		return
+	case "<":
+		m.print(e.Params["msg"].(string))
 		return
 	}
 }
@@ -155,7 +120,7 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Three_
 		m.print(strconv.Itoa(e.Params["cycles"].(int)))
 
 		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_One)
-		compartment.AddEnterArg("cycles", e.Params["cycles"].(int)-1)
+		compartment.AddEnterArg("cycles", (e.Params["cycles"].(int) - 1))
 		m._transition_(compartment)
 		return
 	}

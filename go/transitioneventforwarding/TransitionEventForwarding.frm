@@ -14,10 +14,11 @@ import (
     $One
         |>| [cycles:int] 
             cycles == 0 ?
-                -> => $Stop ^
+               ("stopping") -> => $Stop ^
             :
-                -> => $Two
+               ("keep going") -> => $Two
             :: ^
+        |<| [msg:string] print(msg) ^
             
     $Two
         |>| [cycles:int] -> => $Three ^
@@ -25,7 +26,7 @@ import (
     $Three
         |>| [cycles:int] 
             print(strconv.Itoa(cycles))
-            -> (cycles - 1) $One ^
+            -> ((cycles - 1)) $One ^
         
 
     $Stop 
