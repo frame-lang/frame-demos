@@ -46,10 +46,21 @@ func (m *systemParamsStruct) _mux_(e *framelang.FrameEvent) {
 		m._SystemParamsState_Begin_(e)
 	}
 
-	for m._nextCompartment_ != nil {
+	if m._nextCompartment_ != nil {
 		nextCompartment := m._nextCompartment_
 		m._nextCompartment_ = nil
-		m._do_transition_(nextCompartment)
+		if nextCompartment._forwardEvent_ != nil &&
+			nextCompartment._forwardEvent_.Msg == ">" {
+			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+			m._compartment_ = nextCompartment
+			m._mux_(nextCompartment._forwardEvent_)
+		} else {
+			m._do_transition_(nextCompartment)
+			if nextCompartment._forwardEvent_ != nil {
+				m._mux_(nextCompartment._forwardEvent_)
+			}
+		}
+		nextCompartment._forwardEvent_ = nil
 	}
 }
 
@@ -85,11 +96,12 @@ func (m *systemParamsStruct) print(msg string)  {}
 //=============== Compartment ==============//
 
 type SystemParamsCompartment struct {
-	State     SystemParamsState
-	StateArgs map[string]interface{}
-	StateVars map[string]interface{}
-	EnterArgs map[string]interface{}
-	ExitArgs  map[string]interface{}
+	State          SystemParamsState
+	StateArgs      map[string]interface{}
+	StateVars      map[string]interface{}
+	EnterArgs      map[string]interface{}
+	ExitArgs       map[string]interface{}
+	_forwardEvent_ *framelang.FrameEvent
 }
 
 func NewSystemParamsCompartment(state SystemParamsState) *SystemParamsCompartment {

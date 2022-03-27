@@ -43,6 +43,9 @@ func NewFizzBuzz() FizzBuzz {
 
 	// Initialize domain
 
+	// Send system start event
+	e := framelang.FrameEvent{Msg: ">"}
+	m._mux_(&e)
 	return m
 }
 
@@ -69,10 +72,21 @@ func (m *fizzBuzzStruct) _mux_(e *framelang.FrameEvent) {
 		m._FizzBuzzState_End_(e)
 	}
 
-	for m._nextCompartment_ != nil {
+	if m._nextCompartment_ != nil {
 		nextCompartment := m._nextCompartment_
 		m._nextCompartment_ = nil
-		m._do_transition_(nextCompartment)
+		if nextCompartment._forwardEvent_ != nil &&
+			nextCompartment._forwardEvent_.Msg == ">" {
+			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+			m._compartment_ = nextCompartment
+			m._mux_(nextCompartment._forwardEvent_)
+		} else {
+			m._do_transition_(nextCompartment)
+			if nextCompartment._forwardEvent_ != nil {
+				m._mux_(nextCompartment._forwardEvent_)
+			}
+		}
+		nextCompartment._forwardEvent_ = nil
 	}
 }
 
@@ -81,6 +95,7 @@ func (m *fizzBuzzStruct) _mux_(e *framelang.FrameEvent) {
 func (m *fizzBuzzStruct) _FizzBuzzState_Begin_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
+
 		// start
 		compartment := NewFizzBuzzCompartment(FizzBuzzState_Fizz)
 		compartment.AddEnterArg("i", 1)
@@ -93,6 +108,7 @@ func (m *fizzBuzzStruct) _FizzBuzzState_Fizz_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		if m.gt_100(e.Params["i"].(int)) {
+
 			// i > 100
 			compartment := NewFizzBuzzCompartment(FizzBuzzState_End)
 			m._transition_(compartment)
@@ -100,12 +116,14 @@ func (m *fizzBuzzStruct) _FizzBuzzState_Fizz_(e *framelang.FrameEvent) {
 		}
 		if m.mod3_eq0(e.Params["i"].(int)) {
 			m.print("Fizz")
+
 			// i % 3 == 0
 			compartment := NewFizzBuzzCompartment(FizzBuzzState_Buzz)
 			compartment.AddEnterArg("i", e.Params["i"].(int))
 			compartment.AddEnterArg("fizzed", true)
 			m._transition_(compartment)
 		} else {
+
 			// i % 3 != 0
 			compartment := NewFizzBuzzCompartment(FizzBuzzState_Buzz)
 			compartment.AddEnterArg("i", e.Params["i"].(int))
@@ -121,26 +139,29 @@ func (m *fizzBuzzStruct) _FizzBuzzState_Buzz_(e *framelang.FrameEvent) {
 	case ">":
 		if m.mod5_eq0(e.Params["i"].(int)) {
 			m.print("Buzz")
-			// i % 5 == 0
 
+			// i % 5 == 0
 			m._compartment_.AddExitArg("output", " ")
+
 			compartment := NewFizzBuzzCompartment(FizzBuzzState_Fizz)
 			compartment.AddEnterArg("i", m.plus_1(e.Params["i"].(int)))
 			m._transition_(compartment)
 			return
 		}
 		if e.Params["fizzed"].(bool) {
-			// fizzed
 
+			// fizzed
 			m._compartment_.AddExitArg("output", " ")
+
 			compartment := NewFizzBuzzCompartment(FizzBuzzState_Fizz)
 			compartment.AddEnterArg("i", m.plus_1(e.Params["i"].(int)))
 			m._transition_(compartment)
 			return
 		}
-		// ! mod3 | mod5
 
+		// ! mod3 | mod5
 		m._compartment_.AddExitArg("output", "")
+
 		compartment := NewFizzBuzzCompartment(FizzBuzzState_Digit)
 		compartment.AddEnterArg("i", e.Params["i"].(int))
 		m._transition_(compartment)
@@ -156,6 +177,7 @@ func (m *fizzBuzzStruct) _FizzBuzzState_Digit_(e *framelang.FrameEvent) {
 	case ">":
 		m.print(strconv.Itoa(e.Params["i"].(int)))
 		m.print(" ")
+
 		// loop
 		compartment := NewFizzBuzzCompartment(FizzBuzzState_Fizz)
 		compartment.AddEnterArg("i", m.plus_1(e.Params["i"].(int)))
@@ -195,11 +217,12 @@ func (m *fizzBuzzStruct) plus_1(i int) int {}
 //=============== Compartment ==============//
 
 type FizzBuzzCompartment struct {
-	State     FizzBuzzState
-	StateArgs map[string]interface{}
-	StateVars map[string]interface{}
-	EnterArgs map[string]interface{}
-	ExitArgs  map[string]interface{}
+	State          FizzBuzzState
+	StateArgs      map[string]interface{}
+	StateVars      map[string]interface{}
+	EnterArgs      map[string]interface{}
+	ExitArgs       map[string]interface{}
+	_forwardEvent_ *framelang.FrameEvent
 }
 
 func NewFizzBuzzCompartment(state FizzBuzzState) *FizzBuzzCompartment {

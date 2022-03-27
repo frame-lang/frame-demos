@@ -11,22 +11,22 @@ import (
 
     -machine-
 
-    $One
+    $Start
         |>| [cycles:int] 
             cycles == 0 ?
                ("stopping") -> => $Stop ^
             :
-               ("keep going") -> => $Two
+               ("keep going") -> => $ForwardEventAgain
             :: ^
-        |<| [msg:string] print(msg) ^
+        |<| [msg:string] print(msg)  ^
             
-    $Two
-        |>| [cycles:int] -> => $Three ^
+    $ForwardEventAgain
+        |>| [cycles:int] -> => $Decrement ^
 
-    $Three
+    $Decrement
         |>| [cycles:int] 
             print(strconv.Itoa(cycles))
-            -> ((cycles - 1)) $One ^
+            -> ((cycles - 1)) $Start ^
         
 
     $Stop 

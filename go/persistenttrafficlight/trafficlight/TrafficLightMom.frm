@@ -41,8 +41,8 @@ import (
             -> "Saved" $Persisted ^
 
     $Persisted 
-        |tick| -> ("hi") =>  "Tick" $Working ^
-        |systemError| -> ("hi") => "System Error" $Working ^
+        |tick| -> "Tick"  =>  $Working ^
+        |systemError| -> "System Error" =>  $Working ^
         |<<| -> "Stop" $End ^
 
     $Working => $TrafficLightApi

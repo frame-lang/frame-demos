@@ -44,6 +44,9 @@ func NewHistoryStateContext() HistoryStateContext {
 
 	// Initialize domain
 
+	// Send system start event
+	e := framelang.FrameEvent{Msg: ">"}
+	m._mux_(&e)
 	return m
 }
 
@@ -83,10 +86,21 @@ func (m *historyStateContextStruct) _mux_(e *framelang.FrameEvent) {
 		m._HistoryStateContextState_DeadEnd_(e)
 	}
 
-	for m._nextCompartment_ != nil {
+	if m._nextCompartment_ != nil {
 		nextCompartment := m._nextCompartment_
 		m._nextCompartment_ = nil
-		m._do_transition_(nextCompartment)
+		if nextCompartment._forwardEvent_ != nil &&
+			nextCompartment._forwardEvent_.Msg == ">" {
+			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+			m._compartment_ = nextCompartment
+			m._mux_(nextCompartment._forwardEvent_)
+		} else {
+			m._do_transition_(nextCompartment)
+			if nextCompartment._forwardEvent_ != nil {
+				m._mux_(nextCompartment._forwardEvent_)
+			}
+		}
+		nextCompartment._forwardEvent_ = nil
 	}
 }
 
@@ -95,6 +109,7 @@ func (m *historyStateContextStruct) _mux_(e *framelang.FrameEvent) {
 func (m *historyStateContextStruct) _HistoryStateContextState_Start_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">>":
+
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_S0)
 		compartment.AddStateVar("enterMsg", "Enter S0")
 
@@ -109,12 +124,14 @@ func (m *historyStateContextStruct) _HistoryStateContextState_S0_(e *framelang.F
 		m.print((m._compartment_.GetStateVar("enterMsg").(string)))
 		return
 	case "switchState":
+
 		// Switch\nState
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_S1)
 		m._transition_(compartment)
 		return
 	case "gotoDeadEnd":
 		m._stateStack_push_(m._compartment_)
+
 		// Goto\nDead End
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_DeadEnd)
 		m._transition_(compartment)
@@ -128,6 +145,7 @@ func (m *historyStateContextStruct) _HistoryStateContextState_S1_(e *framelang.F
 		m.print("Enter S1")
 		return
 	case "switchState":
+
 		// Switch\nState
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_S0)
 		compartment.AddStateVar("enterMsg", "Enter S0")
@@ -136,6 +154,7 @@ func (m *historyStateContextStruct) _HistoryStateContextState_S1_(e *framelang.F
 		return
 	case "gotoDeadEnd":
 		m._stateStack_push_(m._compartment_)
+
 		// Goto\nDead End
 		compartment := NewHistoryStateContextCompartment(HistoryStateContextState_DeadEnd)
 		m._transition_(compartment)
@@ -187,11 +206,12 @@ func (m *historyStateContextStruct) print(msg string)  {}
 //=============== Compartment ==============//
 
 type HistoryStateContextCompartment struct {
-	State     HistoryStateContextState
-	StateArgs map[string]interface{}
-	StateVars map[string]interface{}
-	EnterArgs map[string]interface{}
-	ExitArgs  map[string]interface{}
+	State          HistoryStateContextState
+	StateArgs      map[string]interface{}
+	StateVars      map[string]interface{}
+	EnterArgs      map[string]interface{}
+	ExitArgs       map[string]interface{}
+	_forwardEvent_ *framelang.FrameEvent
 }
 
 func NewHistoryStateContextCompartment(state HistoryStateContextState) *HistoryStateContextCompartment {

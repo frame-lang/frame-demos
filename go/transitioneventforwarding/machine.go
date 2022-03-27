@@ -9,9 +9,9 @@ import (
 type TransitionEventForwardingState uint
 
 const (
-	TransitionEventForwardingState_One TransitionEventForwardingState = iota
-	TransitionEventForwardingState_Two
-	TransitionEventForwardingState_Three
+	TransitionEventForwardingState_Start TransitionEventForwardingState = iota
+	TransitionEventForwardingState_ForwardEventAgain
+	TransitionEventForwardingState_Decrement
 	TransitionEventForwardingState_Stop
 )
 
@@ -33,7 +33,7 @@ func NewTransitionEventForwarding(cycles int) TransitionEventForwarding {
 	// Validate interfaces
 	var _ TransitionEventForwarding = m
 	var _ TransitionEventForwarding_actions = m
-	m._compartment_ = NewTransitionEventForwardingCompartment(TransitionEventForwardingState_One)
+	m._compartment_ = NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Start)
 
 	// Initialize domain
 
@@ -49,12 +49,12 @@ func NewTransitionEventForwarding(cycles int) TransitionEventForwarding {
 
 func (m *transitionEventForwardingStruct) _mux_(e *framelang.FrameEvent) {
 	switch m._compartment_.State {
-	case TransitionEventForwardingState_One:
-		m._TransitionEventForwardingState_One_(e)
-	case TransitionEventForwardingState_Two:
-		m._TransitionEventForwardingState_Two_(e)
-	case TransitionEventForwardingState_Three:
-		m._TransitionEventForwardingState_Three_(e)
+	case TransitionEventForwardingState_Start:
+		m._TransitionEventForwardingState_Start_(e)
+	case TransitionEventForwardingState_ForwardEventAgain:
+		m._TransitionEventForwardingState_ForwardEventAgain_(e)
+	case TransitionEventForwardingState_Decrement:
+		m._TransitionEventForwardingState_Decrement_(e)
 	case TransitionEventForwardingState_Stop:
 		m._TransitionEventForwardingState_Stop_(e)
 	}
@@ -79,7 +79,7 @@ func (m *transitionEventForwardingStruct) _mux_(e *framelang.FrameEvent) {
 
 //===================== Machine Block ===================//
 
-func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_One_(e *framelang.FrameEvent) {
+func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Start_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		if e.Params["cycles"].(int) == 0 {
@@ -92,7 +92,7 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_One_(e
 		} else {
 			m._compartment_.AddExitArg("msg", "keep going")
 
-			compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Two)
+			compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_ForwardEventAgain)
 			compartment._forwardEvent_ = e
 			m._transition_(compartment)
 		}
@@ -103,23 +103,23 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_One_(e
 	}
 }
 
-func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Two_(e *framelang.FrameEvent) {
+func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_ForwardEventAgain_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 
-		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Three)
+		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Decrement)
 		compartment._forwardEvent_ = e
 		m._transition_(compartment)
 		return
 	}
 }
 
-func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Three_(e *framelang.FrameEvent) {
+func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Decrement_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
 		m.print(strconv.Itoa(e.Params["cycles"].(int)))
 
-		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_One)
+		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Start)
 		compartment.AddEnterArg("cycles", (e.Params["cycles"].(int) - 1))
 		m._transition_(compartment)
 		return
