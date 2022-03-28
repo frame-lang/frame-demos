@@ -16,7 +16,6 @@ const (
 )
 
 type TrafficLightMom interface {
-	Start()
 	Stop()
 	Tick()
 	EnterRed()
@@ -83,13 +82,8 @@ func NewTrafficLightMom() TrafficLightMom {
 
 //===================== Interface Block ===================//
 
-func (m *trafficLightMomStruct) Start() {
-	e := framelang.FrameEvent{Msg: ">>"}
-	m._mux_(&e)
-}
-
 func (m *trafficLightMomStruct) Stop() {
-	e := framelang.FrameEvent{Msg: "<<"}
+	e := framelang.FrameEvent{Msg: "stop"}
 	m._mux_(&e)
 }
 
@@ -222,9 +216,8 @@ func (m *trafficLightMomStruct) _mux_(e *framelang.FrameEvent) {
 
 func (m *trafficLightMomStruct) _TrafficLightMomState_New_(e *framelang.FrameEvent) {
 	switch e.Msg {
-	case ">>":
+	case ">":
 		m.trafficLight = NewTrafficLight(m)
-		m.trafficLight.Start()
 
 		// Traffic Light\nStarted
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_Saving)
@@ -264,7 +257,7 @@ func (m *trafficLightMomStruct) _TrafficLightMomState_Persisted_(e *framelang.Fr
 		compartment._forwardEvent_ = e
 		m._transition_(compartment)
 		return
-	case "<<":
+	case "stop":
 
 		// Stop
 		compartment := NewTrafficLightMomCompartment(TrafficLightMomState_End)

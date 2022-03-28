@@ -6,8 +6,7 @@ import (
 ```
 #TrafficLightMom
     -interface-
-    start @(|>>|)
-    stop @(|<<|)
+    stop
     tick    
     enterRed
     enterGreen
@@ -29,9 +28,8 @@ import (
     -machine-
 
     $New => $TrafficLightApi
-        |>>| 
+        |>| 
             trafficLight = NewTrafficLight(#)
-            trafficLight.Start()
             -> "Traffic Light\nStarted" $Saving ^
  
     $Saving 
@@ -43,12 +41,15 @@ import (
     $Persisted 
         |tick| -> "Tick"  =>  $Working ^
         |systemError| -> "System Error" =>  $Working ^
-        |<<| -> "Stop" $End ^
+        |stop| -> "Stop" $End ^
 
     $Working => $TrafficLightApi
-        |>| [msg:string]    trafficLight = LoadTrafficLight(# data)  ^
-        |tick|  trafficLight.Tick() -> "Done" $Saving ^
-        |systemError| trafficLight.SystemError() -> "Done" $Saving ^
+        |>| [msg:string]    
+            trafficLight = LoadTrafficLight(# data)  ^
+        |tick|  
+            trafficLight.Tick() -> "Done" $Saving ^
+        |systemError| 
+            trafficLight.SystemError() -> "Done" $Saving ^
 
     $TrafficLightApi
         |enterRed| enterRed() ^

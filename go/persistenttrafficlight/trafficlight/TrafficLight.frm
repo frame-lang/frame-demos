@@ -13,7 +13,6 @@ import (
 
     -interface-
 
-    start @(|>>|)
     stop 
     tick
     systemError
@@ -22,7 +21,7 @@ import (
     -machine-
 
     $Begin
-        |>>|
+        |>|
             startWorkingTimer()
             -> $Red ^
 
