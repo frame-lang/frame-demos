@@ -7,54 +7,54 @@ import (
 	"github.com/frame-lang/frame-demos/changestate/framelang"
 )
 
-type DebugBugState uint
-
-const (
-	DebugBugState_S0 DebugBugState = iota
-	DebugBugState_S1
-)
-
-type DebugBug interface {
-}
-
-type DebugBug_actions interface {
-	print(s string)
-	test()
-}
-
-type debugBugStruct struct {
-	_compartment_     *DebugBugCompartment
-	_nextCompartment_ *DebugBugCompartment
-}
-
-func NewDebugBug(state_param int, enter_param int) DebugBug {
-	m := &debugBugStruct{}
+func NewChangeState(i int) ChangeState {
+	m := &changeStateStruct{}
 
 	// Validate interfaces
-	var _ DebugBug = m
-	var _ DebugBug_actions = m
-	m._compartment_ = NewDebugBugCompartment(DebugBugState_S0)
-	m._compartment_.StateArgs["state_param"] = state_param
-	m._compartment_.StateVars["state_var"] = 100
+	var _ ChangeState = m
+	var _ ChangeState_actions = m
+	m._compartment_ = NewChangeStateCompartment(ChangeStateState_S0)
+	m._compartment_.StateArgs["i"] = i
+	m._compartment_.StateVars["dec"] = 1
 
 	// Initialize domain
 
 	// Send system start event
-	params := make(map[string]interface{})
-	params["enter_param"] = enter_param
-	e := framelang.FrameEvent{Msg: ">", Params: params}
+	e := framelang.FrameEvent{Msg: ">"}
 	m._mux_(&e)
 	return m
 }
 
+type ChangeStateState uint
+
+const (
+	ChangeStateState_S0 ChangeStateState = iota
+	ChangeStateState_S1
+	ChangeStateState_Stop
+)
+
+type ChangeState interface {
+}
+
+type ChangeState_actions interface {
+	print(s string)
+}
+
+type changeStateStruct struct {
+	_compartment_     *ChangeStateCompartment
+	_nextCompartment_ *ChangeStateCompartment
+}
+
 //====================== Multiplexer ====================//
 
-func (m *debugBugStruct) _mux_(e *framelang.FrameEvent) {
+func (m *changeStateStruct) _mux_(e *framelang.FrameEvent) {
 	switch m._compartment_.State {
-	case DebugBugState_S0:
-		m._DebugBugState_S0_(e)
-	case DebugBugState_S1:
-		m._DebugBugState_S1_(e)
+	case ChangeStateState_S0:
+		m._ChangeStateState_S0_(e)
+	case ChangeStateState_S1:
+		m._ChangeStateState_S1_(e)
+	case ChangeStateState_Stop:
+		m._ChangeStateState_Stop_(e)
 	}
 
 	if m._nextCompartment_ != nil {
@@ -77,36 +77,51 @@ func (m *debugBugStruct) _mux_(e *framelang.FrameEvent) {
 
 //===================== Machine Block ===================//
 
-func (m *debugBugStruct) _DebugBugState_S0_(e *framelang.FrameEvent) {
+func (m *changeStateStruct) _ChangeStateState_S0_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
-		m.print(strconv.Itoa((m._compartment_.StateArgs["state_param"].(int))) + " " + strconv.Itoa((m._compartment_.StateVars["state_var"].(int))) + " " + strconv.Itoa(e.Params["enter_param"].(int)))
-		compartment := NewDebugBugCompartment(DebugBugState_S1)
-		compartment._forwardEvent_ = e
-		compartment.StateArgs["state_param"] = m._compartment_.StateArgs["state_param"].(int) + 20
+		m._compartment_.StateArgs["i"] = m._compartment_.StateArgs["i"].(int) - m._compartment_.StateVars["dec"].(int)
+		m.print(strconv.Itoa((m._compartment_.StateArgs["i"].(int))))
+		if (m._compartment_.StateArgs["i"].(int)) == 0 {
+			compartment := NewChangeStateCompartment(ChangeStateState_Stop)
+			m._transition_(compartment)
+			return
+		}
+		compartment := NewChangeStateCompartment(ChangeStateState_S1)
+		compartment.EnterArgs["i"] = m._compartment_.StateArgs["i"].(int)
+		m._transition_(compartment)
+		return
+	}
+}
 
-		compartment.StateVars["state_var"] = 200
+func (m *changeStateStruct) _ChangeStateState_S1_(e *framelang.FrameEvent) {
+	switch e.Msg {
+	case ">":
+		compartment := NewChangeStateCompartment(ChangeStateState_S0)
+		compartment.StateArgs["i"] = e.Params["i"].(int)
+
+		compartment.StateVars["dec"] = 1
 
 		m._transition_(compartment)
 		return
 	}
 }
 
-func (m *debugBugStruct) _DebugBugState_S1_(e *framelang.FrameEvent) {
+func (m *changeStateStruct) _ChangeStateState_Stop_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
-		m.print(strconv.Itoa((m._compartment_.StateArgs["state_param"].(int))) + " " + strconv.Itoa((m._compartment_.StateVars["state_var"].(int))) + " " + strconv.Itoa(e.Params["enter_param"].(int)))
+		m.print("done")
 		return
 	}
 }
 
 //=============== Machinery and Mechanisms ==============//
 
-func (m *debugBugStruct) _transition_(compartment *DebugBugCompartment) {
+func (m *changeStateStruct) _transition_(compartment *ChangeStateCompartment) {
 	m._nextCompartment_ = compartment
 }
 
-func (m *debugBugStruct) _do_transition_(nextCompartment *DebugBugCompartment) {
+func (m *changeStateStruct) _do_transition_(nextCompartment *ChangeStateCompartment) {
 	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.ExitArgs, Ret: nil})
 	m._compartment_ = nextCompartment
 	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.EnterArgs, Ret: nil})
@@ -114,7 +129,7 @@ func (m *debugBugStruct) _do_transition_(nextCompartment *DebugBugCompartment) {
 
 //===================== Actions Block ===================//
 
-func (m *debugBugStruct) print(s string) {
+func (m *changeStateStruct) print(s string) {
 	fmt.Println(s)
 }
 
@@ -122,14 +137,12 @@ func (m *debugBugStruct) print(s string) {
 
 // Unimplemented Actions
 
-func (m *debugBugStruct) test() {}
-
 //********************************************************/
 
 //=============== Compartment ==============//
 
-type DebugBugCompartment struct {
-	State          DebugBugState
+type ChangeStateCompartment struct {
+	State          ChangeStateState
 	StateArgs      map[string]interface{}
 	StateVars      map[string]interface{}
 	EnterArgs      map[string]interface{}
@@ -137,8 +150,8 @@ type DebugBugCompartment struct {
 	_forwardEvent_ *framelang.FrameEvent
 }
 
-func NewDebugBugCompartment(state DebugBugState) *DebugBugCompartment {
-	c := &DebugBugCompartment{State: state}
+func NewChangeStateCompartment(state ChangeStateState) *ChangeStateCompartment {
+	c := &ChangeStateCompartment{State: state}
 	c.StateArgs = make(map[string]interface{})
 	c.StateVars = make(map[string]interface{})
 	c.EnterArgs = make(map[string]interface{})

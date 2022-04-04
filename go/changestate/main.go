@@ -4,5 +4,5 @@ package main
 /// as a compartment stack.
 
 func main() {
-	NewDebugBug(1, 2)
+	NewChangeState(5)
 }
