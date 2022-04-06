@@ -7,7 +7,7 @@ import (
 )
 ```
 
-#TransitionEventForwarding[cycles:int]
+#TransitionEventForwarding >[cycles:int]
 
     -machine-
 

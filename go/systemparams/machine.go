@@ -1,6 +1,26 @@
 package main
 
-import "github.com/frame-lang/frame-demos/systemparams/framelang"
+import (
+	"fmt"
+
+	"github.com/frame-lang/frame-demos/systemparams/framelang"
+)
+
+func NewSystemParams(msg string) SystemParams {
+	m := &systemParamsStruct{}
+
+	// Validate interfaces
+	var _ SystemParams = m
+	var _ SystemParams_actions = m
+	m._compartment_ = NewSystemParamsCompartment(SystemParamsState_Begin)
+
+	// Initialize domain
+
+	// Send system start event
+	e := framelang.FrameEvent{Msg: ">"}
+	m._mux_(&e)
+	return m
+}
 
 type SystemParamsState uint
 
@@ -20,24 +40,6 @@ type systemParamsStruct struct {
 	_nextCompartment_ *SystemParamsCompartment
 }
 
-func NewSystemParams(msg string) SystemParams {
-	m := &systemParamsStruct{}
-
-	// Validate interfaces
-	var _ SystemParams = m
-	var _ SystemParams_actions = m
-	m._compartment_ = NewSystemParamsCompartment(SystemParamsState_Begin)
-
-	// Initialize domain
-
-	// Send system start event
-	params := make(map[string]interface{})
-	params["msg"] = msg
-	e := framelang.FrameEvent{Msg: ">", Params: params}
-	m._mux_(&e)
-	return m
-}
-
 //====================== Multiplexer ====================//
 
 func (m *systemParamsStruct) _mux_(e *framelang.FrameEvent) {
@@ -51,7 +53,7 @@ func (m *systemParamsStruct) _mux_(e *framelang.FrameEvent) {
 		m._nextCompartment_ = nil
 		if nextCompartment._forwardEvent_ != nil &&
 			nextCompartment._forwardEvent_.Msg == ">" {
-			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.ExitArgs, Ret: nil})
 			m._compartment_ = nextCompartment
 			m._mux_(nextCompartment._forwardEvent_)
 		} else {
@@ -81,17 +83,25 @@ func (m *systemParamsStruct) _transition_(compartment *SystemParamsCompartment) 
 }
 
 func (m *systemParamsStruct) _do_transition_(nextCompartment *SystemParamsCompartment) {
-	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.ExitArgs, Ret: nil})
 	m._compartment_ = nextCompartment
-	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.GetEnterArgs(), Ret: nil})
+	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.EnterArgs, Ret: nil})
 }
 
-/********************
-// Sample Actions Implementation
-package systemparams
+//===================== Actions Block ===================//
 
-func (m *systemParamsStruct) print(msg string)  {}
-********************/
+func (m *systemParamsStruct) print(msg string) {
+
+	fmt.Println(msg)
+
+}
+
+/********************************************************
+
+// Unimplemented Actions
+
+
+********************************************************/
 
 //=============== Compartment ==============//
 
@@ -111,60 +121,4 @@ func NewSystemParamsCompartment(state SystemParamsState) *SystemParamsCompartmen
 	c.EnterArgs = make(map[string]interface{})
 	c.ExitArgs = make(map[string]interface{})
 	return c
-}
-
-func (c *SystemParamsCompartment) AddStateArg(name string, value interface{}) {
-	c.StateArgs[name] = value
-}
-
-func (c *SystemParamsCompartment) SetStateArg(name string, value interface{}) {
-	c.StateArgs[name] = value
-}
-
-func (c *SystemParamsCompartment) GetStateArg(name string) interface{} {
-	return c.StateArgs[name]
-}
-
-func (c *SystemParamsCompartment) AddStateVar(name string, value interface{}) {
-	c.StateVars[name] = value
-}
-
-func (c *SystemParamsCompartment) SetStateVar(name string, value interface{}) {
-	c.StateVars[name] = value
-}
-
-func (c *SystemParamsCompartment) GetStateVar(name string) interface{} {
-	return c.StateVars[name]
-}
-
-func (c *SystemParamsCompartment) AddEnterArg(name string, value interface{}) {
-	c.EnterArgs[name] = value
-}
-
-func (c *SystemParamsCompartment) SetEnterArg(name string, value interface{}) {
-	c.EnterArgs[name] = value
-}
-
-func (c *SystemParamsCompartment) GetEnterArg(name string) interface{} {
-	return c.EnterArgs[name]
-}
-
-func (c *SystemParamsCompartment) GetEnterArgs() map[string]interface{} {
-	return c.EnterArgs
-}
-
-func (c *SystemParamsCompartment) AddExitArg(name string, value interface{}) {
-	c.ExitArgs[name] = value
-}
-
-func (c *SystemParamsCompartment) SetExitArg(name string, value interface{}) {
-	c.ExitArgs[name] = value
-}
-
-func (c *SystemParamsCompartment) GetExitArg(name string) interface{} {
-	return c.ExitArgs[name]
-}
-
-func (c *SystemParamsCompartment) GetExitArgs() map[string]interface{} {
-	return c.ExitArgs
 }

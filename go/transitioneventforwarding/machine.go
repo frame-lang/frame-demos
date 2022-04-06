@@ -6,6 +6,24 @@ import (
 	"github.com/frame-lang/frame-demos/transitioneventforwarding/framelang"
 )
 
+func NewTransitionEventForwarding(cycles int) TransitionEventForwarding {
+	m := &transitionEventForwardingStruct{}
+
+	// Validate interfaces
+	var _ TransitionEventForwarding = m
+	var _ TransitionEventForwarding_actions = m
+	m._compartment_ = NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Start)
+
+	// Initialize domain
+
+	// Send system start event
+	params := make(map[string]interface{})
+	params["cycles"] = cycles
+	e := framelang.FrameEvent{Msg: ">", Params: params}
+	m._mux_(&e)
+	return m
+}
+
 type TransitionEventForwardingState uint
 
 const (
@@ -27,24 +45,6 @@ type transitionEventForwardingStruct struct {
 	_nextCompartment_ *TransitionEventForwardingCompartment
 }
 
-func NewTransitionEventForwarding(cycles int) TransitionEventForwarding {
-	m := &transitionEventForwardingStruct{}
-
-	// Validate interfaces
-	var _ TransitionEventForwarding = m
-	var _ TransitionEventForwarding_actions = m
-	m._compartment_ = NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Start)
-
-	// Initialize domain
-
-	// Send system start event
-	params := make(map[string]interface{})
-	params["cycles"] = cycles
-	e := framelang.FrameEvent{Msg: ">", Params: params}
-	m._mux_(&e)
-	return m
-}
-
 //====================== Multiplexer ====================//
 
 func (m *transitionEventForwardingStruct) _mux_(e *framelang.FrameEvent) {
@@ -64,7 +64,7 @@ func (m *transitionEventForwardingStruct) _mux_(e *framelang.FrameEvent) {
 		m._nextCompartment_ = nil
 		if nextCompartment._forwardEvent_ != nil &&
 			nextCompartment._forwardEvent_.Msg == ">" {
-			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+			m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.ExitArgs, Ret: nil})
 			m._compartment_ = nextCompartment
 			m._mux_(nextCompartment._forwardEvent_)
 		} else {
@@ -83,15 +83,13 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Start_
 	switch e.Msg {
 	case ">":
 		if e.Params["cycles"].(int) == 0 {
-			m._compartment_.AddExitArg("msg", "stopping")
-
+			m._compartment_.ExitArgs["msg"] = "stopping"
 			compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Stop)
 			compartment._forwardEvent_ = e
 			m._transition_(compartment)
 			return
 		} else {
-			m._compartment_.AddExitArg("msg", "keep going")
-
+			m._compartment_.ExitArgs["msg"] = "keep going"
 			compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_ForwardEventAgain)
 			compartment._forwardEvent_ = e
 			m._transition_(compartment)
@@ -106,7 +104,6 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Start_
 func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_ForwardEventAgain_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
-
 		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Decrement)
 		compartment._forwardEvent_ = e
 		m._transition_(compartment)
@@ -118,9 +115,8 @@ func (m *transitionEventForwardingStruct) _TransitionEventForwardingState_Decrem
 	switch e.Msg {
 	case ">":
 		m.print(strconv.Itoa(e.Params["cycles"].(int)))
-
 		compartment := NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Start)
-		compartment.AddEnterArg("cycles", (e.Params["cycles"].(int) - 1))
+		compartment.EnterArgs["cycles"] = (e.Params["cycles"].(int) - 1)
 		m._transition_(compartment)
 		return
 	}
@@ -142,17 +138,20 @@ func (m *transitionEventForwardingStruct) _transition_(compartment *TransitionEv
 }
 
 func (m *transitionEventForwardingStruct) _do_transition_(nextCompartment *TransitionEventForwardingCompartment) {
-	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.GetExitArgs(), Ret: nil})
+	m._mux_(&framelang.FrameEvent{Msg: "<", Params: m._compartment_.ExitArgs, Ret: nil})
 	m._compartment_ = nextCompartment
-	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.GetEnterArgs(), Ret: nil})
+	m._mux_(&framelang.FrameEvent{Msg: ">", Params: m._compartment_.EnterArgs, Ret: nil})
 }
 
-/********************
-// Sample Actions Implementation
-package transitioneventforwarding
+//===================== Actions Block ===================//
+
+/********************************************************
+
+// Unimplemented Actions
 
 func (m *transitionEventForwardingStruct) print(msg string)  {}
-********************/
+
+********************************************************/
 
 //=============== Compartment ==============//
 
@@ -172,60 +171,4 @@ func NewTransitionEventForwardingCompartment(state TransitionEventForwardingStat
 	c.EnterArgs = make(map[string]interface{})
 	c.ExitArgs = make(map[string]interface{})
 	return c
-}
-
-func (c *TransitionEventForwardingCompartment) AddStateArg(name string, value interface{}) {
-	c.StateArgs[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) SetStateArg(name string, value interface{}) {
-	c.StateArgs[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) GetStateArg(name string) interface{} {
-	return c.StateArgs[name]
-}
-
-func (c *TransitionEventForwardingCompartment) AddStateVar(name string, value interface{}) {
-	c.StateVars[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) SetStateVar(name string, value interface{}) {
-	c.StateVars[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) GetStateVar(name string) interface{} {
-	return c.StateVars[name]
-}
-
-func (c *TransitionEventForwardingCompartment) AddEnterArg(name string, value interface{}) {
-	c.EnterArgs[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) SetEnterArg(name string, value interface{}) {
-	c.EnterArgs[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) GetEnterArg(name string) interface{} {
-	return c.EnterArgs[name]
-}
-
-func (c *TransitionEventForwardingCompartment) GetEnterArgs() map[string]interface{} {
-	return c.EnterArgs
-}
-
-func (c *TransitionEventForwardingCompartment) AddExitArg(name string, value interface{}) {
-	c.ExitArgs[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) SetExitArg(name string, value interface{}) {
-	c.ExitArgs[name] = value
-}
-
-func (c *TransitionEventForwardingCompartment) GetExitArg(name string) interface{} {
-	return c.ExitArgs[name]
-}
-
-func (c *TransitionEventForwardingCompartment) GetExitArgs() map[string]interface{} {
-	return c.ExitArgs
 }
