@@ -1,4 +1,3 @@
-// get include files at https://github.com/frame-lang/frame-ancillary-files
 package main
 
 import (
