@@ -5,7 +5,9 @@ import (
 )
 ```
 #TrafficLightMom
+
     -interface-
+    
     stop
     tick    
     enterRed
@@ -44,7 +46,7 @@ import (
         |stop| -> "Stop" $End ^
 
     $Working => $TrafficLightApi
-        |>| [msg:string]    
+        |>|    
             trafficLight = LoadTrafficLight(# data)  ^
         |tick|  
             trafficLight.Tick() -> "Done" $Saving ^
@@ -72,8 +74,11 @@ import (
     $End => $TrafficLightApi
         |>|
             trafficLight = LoadTrafficLight(# data) 
-            trafficLight.Stop() ^
+            trafficLight.Stop() 
+            trafficLight = nil ^
+
     -actions-
+
     enterRed
     enterGreen
     enterYellow
@@ -93,4 +98,5 @@ import (
     -domain-
     var trafficLight:TrafficLight = null
     var data:`[]byte` = null
+
 ##
