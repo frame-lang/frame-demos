@@ -1,10 +1,11 @@
-class FrameEvent {
-    constructor(message, params) {
-      this.message = message;
-      this.params = params;
-      
-    }
-    return = null;
-  }
+var FrameEvent = function(message, parameters) {
 
-module.exports =  new FrameEvent;
+  var that = {};
+
+  that._message = message;
+  that._parameters = parameters;
+  that._return = null;
+
+  return that;
+};
+module.exports = FrameEvent;
