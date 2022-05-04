@@ -2,7 +2,7 @@ const FrameEvent = require("./framelang/framelang");
 
 class SystemParams {
   
-  _nextCompartment = this.systemParamsCompartment.call(this);
+  _nextCompartment = null
   constructor(message) {
     this._e = FrameEvent.call(this, '>', {"msg" : message});
     this._state = this._SystemParamsState_Begin_
@@ -21,7 +21,7 @@ class SystemParams {
       this._nextCompartment = null;
       if (
         nextCompartment._forwardEvent != null &&
-        nextCompartment._forwardEvent.message == ">"
+        nextCompartment._forwardEvent._message == ">"
       ) {
         const e = FrameEvent.call(this);
         e._message = "<";
