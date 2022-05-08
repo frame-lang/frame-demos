@@ -7,13 +7,13 @@ import (
 )
 ```
 
-#SystemParams[msg:string]
+#SystemParams $[stateMsg:string] >[enterMsg:string]
 
     -machine-
 
-    $Begin
-        |>|[msg:string]
-            print(msg) ^
+    $Begin [stateMsg:string]
+        |>|[enterMsg:string]
+            print(stateMsg + " " + enterMsg) ^
 
     -actions-
 

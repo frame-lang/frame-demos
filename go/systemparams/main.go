@@ -1,5 +1,5 @@
 package main
 
 func main() {
-	NewSystemParams("hello world")
+	NewSystemParams("hello", "world")
 }

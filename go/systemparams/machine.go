@@ -6,18 +6,21 @@ import (
 	"github.com/frame-lang/frame-demos/systemparams/framelang"
 )
 
-func NewSystemParams(msg string) SystemParams {
+func NewSystemParams(stateMsg string, enterMsg string) SystemParams {
 	m := &systemParamsStruct{}
 
 	// Validate interfaces
 	var _ SystemParams = m
 	var _ SystemParams_actions = m
 	m._compartment_ = NewSystemParamsCompartment(SystemParamsState_Begin)
+	m._compartment_.StateArgs["stateMsg"] = stateMsg
 
 	// Initialize domain
 
 	// Send system start event
-	e := framelang.FrameEvent{Msg: ">"}
+	params := make(map[string]interface{})
+	params["enterMsg"] = enterMsg
+	e := framelang.FrameEvent{Msg: ">", Params: params}
 	m._mux_(&e)
 	return m
 }
@@ -71,7 +74,7 @@ func (m *systemParamsStruct) _mux_(e *framelang.FrameEvent) {
 func (m *systemParamsStruct) _SystemParamsState_Begin_(e *framelang.FrameEvent) {
 	switch e.Msg {
 	case ">":
-		m.print(e.Params["msg"].(string))
+		m.print((m._compartment_.StateArgs["stateMsg"].(string)) + " " + e.Params["enterMsg"].(string))
 		return
 	}
 }
