@@ -3,7 +3,7 @@ package main
 
 import (
 
-	"github.com/frame-lang/frame-demos/changestate/framelang"
+	"github.com/frame-lang/frame-demos/countdown/framelang"
 )
 ```
 #Countdown $[i:int]
@@ -25,7 +25,6 @@ import (
 
   $Stop
     |>| print("done") ^
-
 
   -actions-
 

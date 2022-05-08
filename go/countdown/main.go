@@ -4,5 +4,5 @@ package main
 /// as a compartment stack.
 
 func main() {
-	NewChangeState(5)
+	NewCountdown(5)
 }
