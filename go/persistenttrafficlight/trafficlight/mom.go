@@ -10,9 +10,11 @@ func NewTrafficLightMom() TrafficLightMom {
 	// Validate interfaces
 	var _ TrafficLightMom = m
 	var _ TrafficLightMom_actions = m
+
+	// Create and intialize start state compartment.
 	m._compartment_ = NewTrafficLightMomCompartment(TrafficLightMomState_New)
 
-	// Initialize domain
+	// Override domain variables.
 	m.trafficLight = nil
 	m.data = nil
 

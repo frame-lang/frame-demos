@@ -12,14 +12,12 @@ func NewTransitionEventForwarding(cycles int) TransitionEventForwarding {
 	// Validate interfaces
 	var _ TransitionEventForwarding = m
 	var _ TransitionEventForwarding_actions = m
+	// Create and intialize start state compartment.
 	m._compartment_ = NewTransitionEventForwardingCompartment(TransitionEventForwardingState_Start)
-
-	// Initialize domain
+	m._compartment_.EnterArgs["cycles"] = cycles
 
 	// Send system start event
-	params := make(map[string]interface{})
-	params["cycles"] = cycles
-	e := framelang.FrameEvent{Msg: ">", Params: params}
+	e := framelang.FrameEvent{Msg: ">", Params: m._compartment_.EnterArgs}
 	m._mux_(&e)
 	return m
 }

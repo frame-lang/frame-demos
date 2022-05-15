@@ -5,13 +5,13 @@ import (
 )
 
 func (m *trafficLightStruct) enterRed() {
-	m.mom.EnterRed()
+	m._manager_.EnterRed()
 }
 func (m *trafficLightStruct) enterGreen() {
-	m.mom.EnterGreen()
+	m._manager_.EnterGreen()
 }
 func (m *trafficLightStruct) enterYellow() {
-	m.mom.EnterYellow()
+	m._manager_.EnterYellow()
 }
 func (m *trafficLightStruct) enterFlashingRed() {}
 func (m *trafficLightStruct) exitFlashingRed()  {}

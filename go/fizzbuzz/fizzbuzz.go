@@ -12,9 +12,9 @@ func NewFizzBuzz() FizzBuzz {
 	// Validate interfaces
 	var _ FizzBuzz = m
 	var _ FizzBuzz_actions = m
-	m._compartment_ = NewFizzBuzzCompartment(FizzBuzzState_Begin)
 
-	// Initialize domain
+	// Create and intialize start state compartment.
+	m._compartment_ = NewFizzBuzzCompartment(FizzBuzzState_Begin)
 
 	// Send system start event
 	e := framelang.FrameEvent{Msg: ">"}

@@ -1,5 +1,3 @@
-// emitted from framec_v0.8.0
-// get include files at https://github.com/frame-lang/frame-ancillary-files
 package main
 
 import "github.com/frame-lang/frame-demos/stringtools/framelang"
@@ -10,9 +8,8 @@ func NewStringTools() StringTools {
 	// Validate interfaces
 	var _ StringTools = m
 
+	// Create and intialize start state compartment.
 	m._compartment_ = NewStringToolsCompartment(StringToolsState_Router)
-
-	// Initialize domain
 
 	// Send system start event
 	e := framelang.FrameEvent{Msg: ">"}

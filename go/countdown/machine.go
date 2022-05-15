@@ -13,11 +13,10 @@ func NewCountdown(i int) Countdown {
 	// Validate interfaces
 	var _ Countdown = m
 	var _ Countdown_actions = m
+	// Create and intialize start state compartment.
 	m._compartment_ = NewCountdownCompartment(CountdownState_S0)
 	m._compartment_.StateArgs["i"] = i
 	m._compartment_.StateVars["dec"] = 1
-
-	// Initialize domain
 
 	// Send system start event
 	e := framelang.FrameEvent{Msg: ">"}

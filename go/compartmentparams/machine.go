@@ -13,16 +13,15 @@ func NewCompartmentParams(state_param int, enter_param int) CompartmentParams {
 	// Validate interfaces
 	var _ CompartmentParams = m
 	var _ CompartmentParams_actions = m
+
+	// Create and intialize start state compartment.
 	m._compartment_ = NewCompartmentParamsCompartment(CompartmentParamsState_S0)
 	m._compartment_.StateArgs["state_param"] = state_param
 	m._compartment_.StateVars["state_var"] = 100
-
-	// Initialize domain
+	m._compartment_.EnterArgs["enter_param"] = enter_param
 
 	// Send system start event
-	params := make(map[string]interface{})
-	params["enter_param"] = enter_param
-	e := framelang.FrameEvent{Msg: ">", Params: params}
+	e := framelang.FrameEvent{Msg: ">", Params: m._compartment_.EnterArgs}
 	m._mux_(&e)
 	return m
 }

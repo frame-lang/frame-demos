@@ -12,15 +12,13 @@ func NewSystemParams(stateMsg string, enterMsg string) SystemParams {
 	// Validate interfaces
 	var _ SystemParams = m
 	var _ SystemParams_actions = m
+	// Create and intialize start state compartment.
 	m._compartment_ = NewSystemParamsCompartment(SystemParamsState_Begin)
 	m._compartment_.StateArgs["stateMsg"] = stateMsg
-
-	// Initialize domain
+	m._compartment_.EnterArgs["enterMsg"] = enterMsg
 
 	// Send system start event
-	params := make(map[string]interface{})
-	params["enterMsg"] = enterMsg
-	e := framelang.FrameEvent{Msg: ">", Params: params}
+	e := framelang.FrameEvent{Msg: ">", Params: m._compartment_.EnterArgs}
 	m._mux_(&e)
 	return m
 }

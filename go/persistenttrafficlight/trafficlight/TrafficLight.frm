@@ -7,8 +7,8 @@ import (
 	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 ```
-#[derive(Managed,Marshal)]
-#[mom="TrafficLightMom"]
+#[derive(Marshal)]
+#[managed(TrafficLightMom)]
 #TrafficLight
 
     -interface-

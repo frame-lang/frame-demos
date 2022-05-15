@@ -6,16 +6,18 @@ import (
 	"github.com/frame-lang/frame-demos/persistenttrafficlight/framelang"
 )
 
-func NewTrafficLight(mom TrafficLightMom) TrafficLight {
+func NewTrafficLight(manager TrafficLightMom) TrafficLight {
 	m := &trafficLightStruct{}
-	m.mom = mom
+	m._manager_ = manager
 
 	// Validate interfaces
 	var _ TrafficLight = m
 	var _ TrafficLight_actions = m
+
+	// Create and intialize start state compartment.
 	m._compartment_ = NewTrafficLightCompartment(TrafficLightState_Begin)
 
-	// Initialize domain
+	// Override domain variables.
 	m.flashColor = ""
 
 	// Send system start event
@@ -66,7 +68,7 @@ type TrafficLight_actions interface {
 }
 
 type trafficLightStruct struct {
-	mom               TrafficLightMom
+	_manager_         TrafficLightMom
 	_compartment_     *TrafficLightCompartment
 	_nextCompartment_ *TrafficLightCompartment
 	flashColor        string
@@ -77,9 +79,9 @@ type marshalStruct struct {
 	FlashColor string
 }
 
-func LoadTrafficLight(mom TrafficLightMom, data []byte) TrafficLight {
+func LoadTrafficLight(manager TrafficLightMom, data []byte) TrafficLight {
 	m := &trafficLightStruct{}
-	m.mom = mom
+	m._manager_ = manager
 
 	// Validate interfaces
 	var _ TrafficLight = m
