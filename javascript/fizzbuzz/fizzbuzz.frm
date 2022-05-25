@@ -45,7 +45,7 @@ import (
 
     $Digit
       |>| [i:int]
-        print(strconv.Itoa(i))
+        print(i.toString())
         print(" ")
         ->  (plus_1(i))  "loop" $Fizz ^
 

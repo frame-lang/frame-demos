@@ -1,110 +1,120 @@
 const FrameEvent = require("./framelang/framelang");
 
+// emitted from framec_v0.10.0
+// get include files at https://github.com/frame-lang/frame-ancillary-files
+
 class SystemParams {
-  
-  _nextCompartment = null
-  constructor(message) {
-    this._e = FrameEvent.call(this, '>', {"msg" : message});
-    this._state = this._SystemParamsState_Begin_
-    this._compartment = this.systemParamsCompartment(this._state)
-    this._mux_(this._e)
-  }
-
-  //====================== Multiplexer ====================//
-  _mux_(e) {
-    switch (this._compartment.state) {
-      case this._SystemParamsState_Begin_:
-        this._SystemParamsState_Begin_(e);
-    }
-    if (this._nextCompartment != null) {
-      let nextCompartment = this._nextCompartment;
+    
+  constructor (stateMsg,enterMsg) {
+      
+      // Create and intialize start state compartment.
+      
+      this._state = this._sBegin_;
+      this._compartment = new SystemParamsCompartment(this._state);
       this._nextCompartment = null;
-      if (
-        nextCompartment._forwardEvent != null &&
-        nextCompartment._forwardEvent._message == ">"
-      ) {
-        const e = FrameEvent.call(this);
-        e._message = "<";
-        e._parameters = this._compartment.ExitArgs;
-        e._return = null;
-        this._mux_(e);
-        this._compartment = nextCompartment;
-        this._mux_(nextCompartment._forwardEvent);
-      } else {
-        this._do_transition_(nextCompartment);
-        if (nextCompartment._forwardEvent != null) {
-          this._mux_(nextCompartment._forwardEvent);
-        }
+      this._compartment.StateArgs["stateMsg"] = stateMsg;
+      this._compartment.EnterArgs["enterMsg"] = enterMsg;
+      
+      // Initialize domain
+      
+      // Send system start event
+      this._frameEvent = FrameEvent(">", this._compartment.EnterArgs);
+      this._mux_(this._frameEvent);
+  }
+  
+  //====================== Multiplexer ====================//
+  
+  _mux_(e) {
+      switch (this._compartment.state) {
+          case this._sBegin_:
+              this._sBegin_(e);
+              break;
       }
-      nextCompartment._forwardEvent = null;
-    }
+      
+      if( this._nextCompartment != null) {
+          let nextCompartment = this._nextCompartment
+          this._nextCompartment = null
+          if (nextCompartment._forwardEvent != null && 
+             nextCompartment._forwardEvent._message == ">") {
+              this._mux_(FrameEvent( "<", this._compartment.ExitArgs))
+              this._compartment = nextCompartment
+              this._mux_(nextCompartment._forwardEvent)
+          } else {
+              this._do_transition_(nextCompartment)
+              if (nextCompartment._forwardEvent != null) {
+                  this._mux_(nextCompartment._forwardEvent)
+              }
+          }
+          nextCompartment._forwardEvent = null
+      }
   }
-
+  
   //===================== Machine Block ===================//
-
-  _SystemParamsState_Begin_(e) {
-    switch (e._message) {
-      case ">":
-        this.print(e._parameters["msg"].toString());
-        return;
-    }
+  
+  _sBegin_(e) {
+      switch (e._message) {
+          case ">":
+              {
+              this.print_do((this._compartment.StateArgs["stateMsg"]) + " " + (e._parameters["enterMsg"]));
+              return;
+              }
+              
+      }
   }
-
-  //=============== Machinery and Mechanisms ==============//
-  _transition_(compartment) {
-    this._nextCompartment = compartment;
-  }
-
-  _do_transition_(nextCompartment) {
-    const e = FrameEvent.call(this );
-    e._message = "<";
-    e._parameters = this._compartment.ExitArgs;
-    e._return = null;
-
-    this._mux_(e);
-
-    this._compartment = nextCompartment;
-
-    e._message = ">";
-    e._parameters = this._compartment.EnterArgs;
-    e._return = null;
-
-    this._mux_(e);
-  }
-
+  
   //===================== Actions Block ===================//
-
-  print(msg) {
-    throw new Error('Action not implemented.');
+  
+  print_do (msg) {
+      
+      console.log(msg)
+  
   }
-
-  //=============== Compartment ==============//
-
-  systemParamsCompartment(state) {
-    let that = {};
-
-    that.state = state;
-    that.StateArgs = {};
-    that.StateVars = {};
-    that.EnterArgs = {};
-    that.ExitArgs = {};
-    that._forwardEvent = FrameEvent.call(this);
-
-    return that;
+  
+  // Unimplemented Actions
+  
+  
+  //=============== Machinery and Mechanisms ==============//
+  
+  _transition_(compartment) {
+      this._nextCompartment = compartment;
   }
+  
+  _do_transition_(nextCompartment) {
+      this._mux_(FrameEvent("<", this._compartment.ExitArgs));
+      this._compartment = nextCompartment;
+      this._mux_(FrameEvent(">", this._compartment.EnterArgs));
+  }
+  
+  
+  
+};
+
+//=============== Compartment ==============//
+
+class SystemParamsCompartment {
+
+  constructor(state) {
+      this.state = state
+  }
+  
+  StateArgs = {};
+  StateVars = {};
+  EnterArgs = {};
+  ExitArgs = {};
+  _forwardEvent = FrameEvent.call(this)
 }
 
 
-// ****************************************************************//
 
-class Controller extends SystemParams {
-    constructor(message){
-      super(message)
-    }
-  
-    print(msg){
-      console.log(msg)
-    }
-  }
-  
-let a = new Controller("Hello world")
+
+class SystemParamsController extends SystemParams {
+
+constructor(stateMsg,enterMsg) {
+  super(stateMsg,enterMsg)
+}
+};
+
+
+
+
+let a = new SystemParamsController("Hello world", "Deepak");

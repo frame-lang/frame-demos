@@ -1,132 +1,136 @@
 const FrameEvent = require("../fizzbuzz/framelang/framelang");
 
 class CompartmentParams {
-  constructor(state_param, enter_param) {
-    this._compartment = this.CompartmentParamsCompartment(
-      this.CompartmentParamsState_S0
-    );
-    this._nextCompartment = null;
-    this._compartment.StateArgs["state_param"] = state_param;
-    this._compartment.StateVars["state_var"] = 100;
-    this._e = FrameEvent(">", { enter_param: enter_param });
-    this._mux_(this._e);
-  }
-  //====================== Multiplexer ====================//
-  _mux_(e) {
-    switch (this._compartment.state) {
-      case this.CompartmentParamsState_S0:
-        this.CompartmentParamsState_S0(e);
-        break;
-      case this.CompartmentParamsState_S1:
-        this.CompartmentParamsState_S1(e);
-        break;
-    }
-    if (this._nextCompartment != null) {
-      let nextCompartment = this._nextCompartment;
+    
+  constructor (state_param,enter_param) {
+      
+      // Create and intialize start state compartment.
+      
+      this._state = this._sS0_;
+      this._compartment = new CompartmentParamsCompartment(this._state);
       this._nextCompartment = null;
-      if (
-        nextCompartment._forwardEvent != null &&
-        nextCompartment._forwardEvent._message == ">"
-      ) {
-        const e = FrameEvent.call(this);
-        e._message = "<";
-        e._parameters = this._compartment.ExitArgs;
-        e._return = null;
-        this._mux_(e);
-        this._compartment = nextCompartment;
-        this._mux_(nextCompartment._forwardEvent);
-      } else {
-        this._do_transition_(nextCompartment);
-        if (nextCompartment._forwardEvent != null) {
-          this._mux_(nextCompartment._forwardEvent);
-        }
+      this._compartment.StateArgs["state_param"] = state_param;
+      this._compartment.StateVars["state_var"] = 100;
+      this._compartment.EnterArgs["enter_param"] = enter_param;
+      
+      // Initialize domain
+      
+      // Send system start event
+      this._frameEvent = FrameEvent(">", this._compartment.EnterArgs);
+      this._mux_(this._frameEvent);
+  }
+  
+  //====================== Multiplexer ====================//
+  
+  _mux_(e) {
+      switch (this._compartment.state) {
+          case this._sS0_:
+              this._sS0_(e);
+              break;
+          case this._sS1_:
+              this._sS1_(e);
+              break;
       }
-      nextCompartment._forwardEvent = null;
-    }
+      
+      if( this._nextCompartment != null) {
+          let nextCompartment = this._nextCompartment
+          this._nextCompartment = null
+          if (nextCompartment._forwardEvent != null && 
+             nextCompartment._forwardEvent._message == ">") {
+              this._mux_(FrameEvent( "<", this._compartment.ExitArgs))
+              this._compartment = nextCompartment
+              this._mux_(nextCompartment._forwardEvent)
+          } else {
+              this._do_transition_(nextCompartment)
+              if (nextCompartment._forwardEvent != null) {
+                  this._mux_(nextCompartment._forwardEvent)
+              }
+          }
+          nextCompartment._forwardEvent = null
+      }
   }
+  
   //===================== Machine Block ===================//
-  CompartmentParamsState_S0(e) {
-    switch (e._message) {
-      case ">":
-        this.print(
-          parseInt(this._compartment.StateArgs["state_param"]) +
-            " " +
-            parseInt(this._compartment.StateVars["state_var"]) +
-            " " +
-            e._parameters["enter_param"]
-        );
-        let compartment = this.CompartmentParamsCompartment(
-          this.CompartmentParamsState_S1
-        );
-        compartment._forwardEvent = e;
-        compartment.StateArgs["state_param"] =
-          parseInt(this._compartment.StateArgs["state_param"]) + 20;
-        compartment.StateVars["state_var"] = 200;
-        this._transition_(compartment);
-        return;
-    }
+  
+  _sS0_(e) {
+      switch (e._message) {
+          case ">":
+              {
+              this.print_do((this._compartment.StateArgs["state_param"]) + " " + (this._compartment.StateVars["state_var"]) + " " + (e._parameters["enter_param"]));
+              let compartment =  new CompartmentParamsCompartment(this._sS1_);
+              
+              compartment._forwardEvent = e;
+              compartment.StateArgs["state_param"] = this._compartment.StateArgs["state_param"] + 20;
+              compartment.StateVars["state_var"] = 200;
+              
+              this._transition_(compartment);
+              return;
+              }
+              
+      }
   }
-  CompartmentParamsState_S1(e) {
-    switch (e._message) {
-      case ">":
-        this.print(
-          parseInt(this._compartment.StateArgs["state_param"]) +
-            " " +
-            parseInt(this._compartment.StateVars["state_var"]) +
-            " " +
-            e._parameters["enter_param"]
-        );
-        return;
-    }
+  
+  _sS1_(e) {
+      switch (e._message) {
+          case ">":
+              {
+              this.print_do((this._compartment.StateArgs["state_param"]) + " " + (this._compartment.StateVars["state_var"]) + " " + (e._parameters["enter_param"]));
+              return;
+              }
+              
+      }
   }
-  //=============== Machinery and Mechanisms ==============//
-  _transition_(compartment) {
-    this._nextCompartment = compartment;
-  }
-
-  _do_transition_(nextCompartment) {
-    const e = FrameEvent("<", this._compartment.ExitArgs);
-    this._mux_(e);
-
-    this._compartment = nextCompartment;
-
-    e._message = ">";
-    e._parameters = this._compartment.EnterArgs;
-    e._return = null;
-
-    this._mux_(e);
-  }
+  
   //===================== Actions Block ===================//
+  
+  print_do (s) {
+      console.log(s)
+  }
+  
   // Unimplemented Actions
-  print(s) {
-    throw new Error("Action is not implemented");
+  
+  
+  //=============== Machinery and Mechanisms ==============//
+  
+  _transition_(compartment) {
+      this._nextCompartment = compartment;
   }
-  //=============== Compartment ==============//
-
-  CompartmentParamsCompartment(state) {
-    let that = {};
-
-    that.state = state;
-    that.StateArgs = {};
-    that.StateVars = {};
-    that.EnterArgs = {};
-    that.ExitArgs = {};
-    that._forwardEvent = FrameEvent.call(this);
-
-    return that;
+  
+  _do_transition_(nextCompartment) {
+      this._mux_(FrameEvent("<", this._compartment.ExitArgs));
+      this._compartment = nextCompartment;
+      this._mux_(FrameEvent(">", this._compartment.EnterArgs));
   }
+  
+  
+  
+};
+
+//=============== Compartment ==============//
+
+class CompartmentParamsCompartment {
+
+  constructor(state) {
+      this.state = state
+  }
+  
+  StateArgs = {};
+  StateVars = {};
+  EnterArgs = {};
+  ExitArgs = {};
+  _forwardEvent = FrameEvent.call(this)
 }
 
-// ***********************************
+
+
 
 class CompartmentParamsController extends CompartmentParams {
-  constructor(state_param, enter_param) {
-    super(state_param, enter_param);
-  }
 
-  print(s) {
-    console.log(s);
-  }
+constructor(state_param,enter_param) {
+  super(state_param,enter_param)
 }
+};
 
-new CompartmentParamsController(1, 2);
+
+module.exports = CompartmentParamsController;
+
