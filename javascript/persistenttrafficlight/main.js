@@ -1,14 +1,14 @@
 const TrafficLightMomController = require("./trafficlight/mom")
 
-let a = new TrafficLightMomController
+let mom = new TrafficLightMomController()
 
 const tick = setInterval(()=>{
     console.log("Tick")
-    a.tick()
+    mom.tick()
 },1000)
 
 setTimeout(()=>{
     clearInterval(tick)
-    a.stop()
+    mom.stop()
     console.log("Finished")
 }, 5000)
