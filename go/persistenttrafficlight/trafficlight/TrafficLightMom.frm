@@ -31,7 +31,7 @@ import (
 
     $New => $TrafficLightApi
         |>| 
-            trafficLight = new NewTrafficLight(#)
+            trafficLight = NewTrafficLight(#)
             -> "Traffic Light\nStarted" $Saving ^
  
     $Saving 
