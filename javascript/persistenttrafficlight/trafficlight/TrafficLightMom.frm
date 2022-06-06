@@ -31,12 +31,12 @@ import (
 
     $New => $TrafficLightApi
         |>| 
-            trafficLight = NewTrafficLight(#)
+            trafficLight = new TrafficLightController(#)
             -> "Traffic Light\nStarted" $Saving ^
  
     $Saving 
         |>|
-            data = trafficLight.Marshal() 
+            data = trafficLight.marshal() 
             trafficLight = nil 
             -> "Saved" $Persisted ^
 
@@ -47,11 +47,11 @@ import (
 
     $Working => $TrafficLightApi
         |>|    
-            trafficLight = LoadTrafficLight(# data)  ^
+            trafficLight = TrafficLightController.loadTrafficLight(# data)  ^
         |tick|  
-            trafficLight.Tick() -> "Done" $Saving ^
+            trafficLight.tick() -> "Done" $Saving ^
         |systemError| 
-            trafficLight.SystemError() -> "Done" $Saving ^
+            trafficLight.systemError_do() -> "Done" $Saving ^
 
     $TrafficLightApi
         |enterRed| enterRed() ^
@@ -73,8 +73,8 @@ import (
 
     $End => $TrafficLightApi
         |>|
-            trafficLight = LoadTrafficLight(# data) 
-            trafficLight.Stop() 
+            trafficLight = TrafficLightController.loadTrafficLight(# data) 
+            trafficLight.stop() 
             trafficLight = nil ^
 
     -actions-

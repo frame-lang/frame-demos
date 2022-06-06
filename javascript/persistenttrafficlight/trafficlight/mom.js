@@ -1,6 +1,6 @@
 // emitted from framec_v0.10.0
 
-const TrafficLight = require("./machine");
+const TrafficLightController = require("./machine");
 const FrameEvent = require("../framelang/framelang");
 // get include files at https://github.com/frame-lang/frame-ancillary-files
 
@@ -163,8 +163,7 @@ class TrafficLightMom {
         switch (e._message) {
             case ">":
                 {
-                // FIXME: need to work on calling, working yet
-                this.trafficLight = TrafficLightMom.caller(TrafficLight, this);
+                this.trafficLight = new TrafficLightController(this);
                 // Traffic Light\nStarted
                 let compartment =  new TrafficLightMomCompartment(this._sSaving_);
                 
@@ -236,7 +235,7 @@ class TrafficLightMom {
         switch (e._message) {
             case ">":
                 {
-                this.trafficLight = TrafficLight.loadTrafficLight(this,this.data);
+                this.trafficLight = TrafficLightController.loadTrafficLight(this,this.data);
                 return;
                 }
                 
@@ -253,7 +252,7 @@ class TrafficLightMom {
                 
             case "systemError":
                 {
-                this.trafficLight.systemError();
+                this.trafficLight.systemError_do();
                 // Done
                 let compartment =  new TrafficLightMomCompartment(this._sSaving_);
                 
@@ -372,8 +371,8 @@ class TrafficLightMom {
         switch (e._message) {
             case ">":
                 {
-                this.trafficLight = TrafficLight.loadTrafficLight(this,this.data);
-                this.trafficLight.stop()
+                this.trafficLight = TrafficLightController.loadTrafficLight(this,this.data);
+                this.trafficLight.stop();
                 this.trafficLight = null;
                 return;
                 }
@@ -416,14 +415,10 @@ class TrafficLightMom {
         this._mux_(FrameEvent(">", this._compartment.EnterArgs));
     }
     
-
-    // for calling the base call in MOM
-    static caller(ClassName, ...args){
-        return new ClassName(...args)
-    }
     
     
 };
+
 
 //=============== Compartment ==============//
 

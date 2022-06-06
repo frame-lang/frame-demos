@@ -5,7 +5,7 @@ let mom = new TrafficLightMomController()
 const tick = setInterval(()=>{
     console.log("Tick")
     mom.tick()
-},1000)
+},500)
 
 setTimeout(()=>{
     clearInterval(tick)
