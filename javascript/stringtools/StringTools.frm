@@ -1,11 +1,3 @@
-   ```
-package main
-
-import (
-	"fmt"
-    "github.com/frame-lang/frame-demos/systemparams/trafficlight"
-)
-```
 
 #StringTools
 

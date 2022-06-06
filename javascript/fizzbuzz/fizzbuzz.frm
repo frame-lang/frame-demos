@@ -1,11 +1,4 @@
-```
-package main
 
-import (
-
-	"github.com/frame-lang/frame-demos/fizzbuzz/framelang"
-)
-```
 #FizzBuzz
 
   -interface-

@@ -1,12 +1,3 @@
-
-```
-package main
-
-import (
-	"github.com/frame-lang/frame-demos/transitioneventforwarding/framelang"
-)
-```
-
 #TransitionEventForwarding >[cycles:int]
 
     -machine-

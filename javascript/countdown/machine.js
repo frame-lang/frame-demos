@@ -1,9 +1,8 @@
-const FrameEvent = require("../fizzbuzz/framelang/framelang");
-
+const FrameEvent = require("./framelang/framelang");
 // emitted from framec_v0.10.0
 // get include files at https://github.com/frame-lang/frame-ancillary-files
 
-class TransitionEventForwarding {
+class Countdown {
     
     // creating private properties
     
@@ -12,19 +11,20 @@ class TransitionEventForwarding {
     #nextCompartment
     
     
-    constructor (cycles) {
+    constructor (i) {
         
         // Create and intialize start state compartment.
         
-        this.#state = this.#sStart_;
-        this.#compartment = new TransitionEventForwardingCompartment(this.#state);
+        this.#state = this.#sS0_;
+        this.#compartment = new CountdownCompartment(this.#state);
         this.#nextCompartment = null;
-        this.#compartment.EnterArgs["cycles"] = cycles;
+        this.#compartment.StateArgs["i"] = i;
+        this.#compartment.StateVars["dec"] = 1;
         
         // Initialize domain
         
         // Send system start event
-        const frameEvent = FrameEvent(">", this.#compartment.EnterArgs);
+        const frameEvent = FrameEvent(">", null);
         this.#mux(frameEvent);
     }
     
@@ -32,14 +32,11 @@ class TransitionEventForwarding {
     
     #mux(e) {
         switch (this.#compartment.state) {
-            case this.#sStart_:
-                this.#sStart_(e);
+            case this.#sS0_:
+                this.#sS0_(e);
                 break;
-            case this.#sForwardEventAgain_:
-                this.#sForwardEventAgain_(e);
-                break;
-            case this.#sDecrement_:
-                this.#sDecrement_(e);
+            case this.#sS1_:
+                this.#sS1_(e);
                 break;
             case this.#sStop_:
                 this.#sStop_(e);
@@ -66,45 +63,22 @@ class TransitionEventForwarding {
     
     //===================== Machine Block ===================//
     
-    #sStart_(e) {
+    #sS0_(e) {
         switch (e._message) {
             case ">":
                 {
-                if ((e._parameters["cycles"]) == 0) {
-                    this.#compartment.ExitArgs["msg"] = "stopping";
-                    let compartment =  new TransitionEventForwardingCompartment(this.#sStop_);
+                (this.#compartment.StateArgs["i"]) = (this.#compartment.StateArgs["i"]) - (this.#compartment.StateVars["dec"]);
+                this.print_do((this.#compartment.StateArgs["i"]).toString());
+                if ((this.#compartment.StateArgs["i"]) == 0) {
+                    let compartment =  new CountdownCompartment(this.#sStop_);
                     
-                    compartment._forwardEvent = e;
                     
                     this.#transition(compartment);
                     return;
-                } else {
-                    this.#compartment.ExitArgs["msg"] = "keep going";
-                    let compartment =  new TransitionEventForwardingCompartment(this.#sForwardEventAgain_);
-                    
-                    compartment._forwardEvent = e;
-                    
-                    this.#transition(compartment);
                 }
-                return;
-                }
+                let compartment =  new CountdownCompartment(this.#sS1_);
                 
-            case "<":
-                {
-                this.print_do((e._parameters["msg"]));
-                return;
-                }
-                
-        }
-    }
-    
-    #sForwardEventAgain_(e) {
-        switch (e._message) {
-            case ">":
-                {
-                let compartment =  new TransitionEventForwardingCompartment(this.#sDecrement_);
-                
-                compartment._forwardEvent = e;
+                compartment.EnterArgs["i"] = this.#compartment.StateArgs["i"];
                 
                 this.#transition(compartment);
                 return;
@@ -113,14 +87,14 @@ class TransitionEventForwarding {
         }
     }
     
-    #sDecrement_(e) {
+    #sS1_(e) {
         switch (e._message) {
             case ">":
                 {
-                this.print_do((e._parameters["cycles"]).toString());
-                let compartment =  new TransitionEventForwardingCompartment(this.#sStart_);
+                let compartment =  new CountdownCompartment(this.#sS0_);
                 
-                compartment.EnterArgs["cycles"] = (e._parameters["cycles"] - 1);
+                compartment.StateArgs["i"] = e._parameters["i"];
+                compartment.StateVars["dec"] = 1;
                 
                 this.#transition(compartment);
                 return;
@@ -133,7 +107,6 @@ class TransitionEventForwarding {
         switch (e._message) {
             case ">":
                 {
-                this.print_do((e._parameters["cycles"]).toString());
                 this.print_do("done");
                 return;
                 }
@@ -143,9 +116,12 @@ class TransitionEventForwarding {
     
     //===================== Actions Block ===================//
     
+    print_do (s) {
+        console.log(s)
+    }
+    
     // Unimplemented Actions
     
-    print_do(msg) { throw new Error('Action not implemented.'); }
     
     //=============== Machinery and Mechanisms ==============//
     
@@ -165,7 +141,7 @@ class TransitionEventForwarding {
 
 //=============== Compartment ==============//
 
-class TransitionEventForwardingCompartment {
+class CountdownCompartment {
 
     constructor(state) {
         this.state = state
@@ -181,16 +157,13 @@ class TransitionEventForwardingCompartment {
 
 
 
-class TransitionEventForwardingController extends TransitionEventForwarding {
+class CountdownController extends Countdown {
 
-	constructor(cycles) {
-	  super(cycles)
+	constructor(i) {
+	  super(i)
 	}
-	print_do(msg) {
-        console.log(msg)
-    }
 };
 
+module.exports = CountdownController
 
 
-module.exports = TransitionEventForwardingController

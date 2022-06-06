@@ -5,89 +5,97 @@ const FrameEvent = require("./framelang/framelang");
 
 class SystemParams {
     
-  constructor (stateMsg,enterMsg) {
-      
-      // Create and intialize start state compartment.
-      
-      this._state = this._sBegin_;
-      this._compartment = new SystemParamsCompartment(this._state);
-      this._nextCompartment = null;
-      this._compartment.StateArgs["stateMsg"] = stateMsg;
-      this._compartment.EnterArgs["enterMsg"] = enterMsg;
-      
-      // Initialize domain
-      
-      // Send system start event
-      this._frameEvent = FrameEvent(">", this._compartment.EnterArgs);
-      this._mux_(this._frameEvent);
-  }
-  
-  //====================== Multiplexer ====================//
-  
-  _mux_(e) {
-      switch (this._compartment.state) {
-          case this._sBegin_:
-              this._sBegin_(e);
-              break;
-      }
-      
-      if( this._nextCompartment != null) {
-          let nextCompartment = this._nextCompartment
-          this._nextCompartment = null
-          if (nextCompartment._forwardEvent != null && 
-             nextCompartment._forwardEvent._message == ">") {
-              this._mux_(FrameEvent( "<", this._compartment.ExitArgs))
-              this._compartment = nextCompartment
-              this._mux_(nextCompartment._forwardEvent)
-          } else {
-              this._do_transition_(nextCompartment)
-              if (nextCompartment._forwardEvent != null) {
-                  this._mux_(nextCompartment._forwardEvent)
-              }
-          }
-          nextCompartment._forwardEvent = null
-      }
-  }
-  
-  //===================== Machine Block ===================//
-  
-  _sBegin_(e) {
-      switch (e._message) {
-          case ">":
-              {
-              this.print_do((this._compartment.StateArgs["stateMsg"]) + " " + (e._parameters["enterMsg"]));
-              return;
-              }
-              
-      }
-  }
-  
-  //===================== Actions Block ===================//
-  
-  print_do (msg) {
-      
-      console.log(msg)
-  
-  }
-  
-  // Unimplemented Actions
-  
-  
-  //=============== Machinery and Mechanisms ==============//
-  
-  _transition_(compartment) {
-      this._nextCompartment = compartment;
-  }
-  
-  _do_transition_(nextCompartment) {
-      this._mux_(FrameEvent("<", this._compartment.ExitArgs));
-      this._compartment = nextCompartment;
-      this._mux_(FrameEvent(">", this._compartment.EnterArgs));
-  }
-  
-  
-  
+    // creating private properties
+    
+    #state
+    #compartment
+    #nextCompartment
+    
+    
+    constructor (stateMsg,enterMsg) {
+        
+        // Create and intialize start state compartment.
+        
+        this.#state = this.#sBegin_;
+        this.#compartment = new SystemParamsCompartment(this.#state);
+        this.#nextCompartment = null;
+        this.#compartment.StateArgs["stateMsg"] = stateMsg;
+        this.#compartment.EnterArgs["enterMsg"] = enterMsg;
+        
+        // Initialize domain
+        
+        // Send system start event
+        const frameEvent = FrameEvent(">", this.#compartment.EnterArgs);
+        this.#mux(frameEvent);
+    }
+    
+    //====================== Multiplexer ====================//
+    
+    #mux(e) {
+        switch (this.#compartment.state) {
+            case this.#sBegin_:
+                this.#sBegin_(e);
+                break;
+        }
+        
+        if( this.#nextCompartment != null) {
+            let nextCompartment = this.#nextCompartment
+            this.#nextCompartment = null
+            if (nextCompartment._forwardEvent != null && 
+               nextCompartment._forwardEvent._message == ">") {
+                this.#mux(FrameEvent( "<", this.#compartment.ExitArgs))
+                this.#compartment = nextCompartment
+                this.#mux(nextCompartment._forwardEvent)
+            } else {
+                this.#doTransition(nextCompartment)
+                if (nextCompartment._forwardEvent != null) {
+                    this.#mux(nextCompartment._forwardEvent)
+                }
+            }
+            nextCompartment._forwardEvent = null
+        }
+    }
+    
+    //===================== Machine Block ===================//
+    
+    #sBegin_(e) {
+        switch (e._message) {
+            case ">":
+                {
+                this.print_do((this.#compartment.StateArgs["stateMsg"]) + " " + (e._parameters["enterMsg"]));
+                return;
+                }
+                
+        }
+    }
+    
+    //===================== Actions Block ===================//
+    
+    print_do (msg) {
+        
+        console.log(msg)
+    
+    }
+    
+    // Unimplemented Actions
+    
+    
+    //=============== Machinery and Mechanisms ==============//
+    
+    #transition(compartment) {
+        this.#nextCompartment = compartment;
+    }
+    
+    #doTransition(nextCompartment) {
+        this.#mux(FrameEvent("<", this.#compartment.ExitArgs));
+        this.#compartment = nextCompartment;
+        this.#mux(FrameEvent(">", this.#compartment.EnterArgs));
+    }
+    
+    
+    
 };
+
 
 //=============== Compartment ==============//
 
@@ -115,6 +123,6 @@ constructor(stateMsg,enterMsg) {
 };
 
 
+module.exports = SystemParamsController
 
 
-let a = new SystemParamsController("Hello world", "Deepak");

@@ -1,11 +1,4 @@
-```
-package main
 
-import (
-
-	"github.com/frame-lang/frame-demos/compartmentparams/framelang"
-)
-```
 #CompartmentParams $[state_param:int] >[enter_param:int]
 
   -machine-

@@ -6,62 +6,69 @@ const FrameEvent = require("./framelang/framelang");
 
 class StringTools {
     
+    // creating private properties
+    
+    #state
+    #compartment
+    #nextCompartment
+    
+    
     constructor () {
         
         // Create and intialize start state compartment.
         
-        this._state = this._sRouter_;
-        this._compartment = new StringToolsCompartment(this._state);
-        this._nextCompartment = null;
+        this.#state = this.#sRouter_;
+        this.#compartment = new StringToolsCompartment(this.#state);
+        this.#nextCompartment = null;
         
         // Initialize domain
         
         // Send system start event
-        this._frameEvent = FrameEvent(">", null);
-        this._mux_(this._frameEvent);
+        const frameEvent = FrameEvent(">", null);
+        this.#mux(frameEvent);
     }
     
     //===================== Interface Block ===================//
     
     reverse(str) {
         let e = FrameEvent("reverse",{"str":str});
-        this._mux_(e);
+        this.#mux(e);
         return e._return;
     }
     
     makePalindrome(str) {
         let e = FrameEvent("makePalindrome",{"str":str});
-        this._mux_(e);
+        this.#mux(e);
         return e._return;
     }
     
     //====================== Multiplexer ====================//
     
-    _mux_(e) {
-        switch (this._compartment.state) {
-            case this._sRouter_:
-                this._sRouter_(e);
+    #mux(e) {
+        switch (this.#compartment.state) {
+            case this.#sRouter_:
+                this.#sRouter_(e);
                 break;
-            case this._sReverse_:
-                this._sReverse_(e);
+            case this.#sReverse_:
+                this.#sReverse_(e);
                 break;
-            case this._sMakePalindrome_:
-                this._sMakePalindrome_(e);
+            case this.#sMakePalindrome_:
+                this.#sMakePalindrome_(e);
                 break;
         }
         
-        if( this._nextCompartment != null) {
-            let nextCompartment = this._nextCompartment
-            this._nextCompartment = null
+        if( this.#nextCompartment != null) {
+            let nextCompartment = this.#nextCompartment
+            this.#nextCompartment = null
             if (nextCompartment._forwardEvent != null && 
                nextCompartment._forwardEvent._message == ">") {
-                this._mux_(FrameEvent( "<", this._compartment.ExitArgs))
-                this._compartment = nextCompartment
-                this._mux_(nextCompartment._forwardEvent)
+                this.#mux(FrameEvent( "<", this.#compartment.ExitArgs))
+                this.#compartment = nextCompartment
+                this.#mux(nextCompartment._forwardEvent)
             } else {
-                this._do_transition_(nextCompartment)
+                this.#doTransition(nextCompartment)
                 if (nextCompartment._forwardEvent != null) {
-                    this._mux_(nextCompartment._forwardEvent)
+                    this.#mux(nextCompartment._forwardEvent)
                 }
             }
             nextCompartment._forwardEvent = null
@@ -70,59 +77,59 @@ class StringTools {
     
     //===================== Machine Block ===================//
     
-    _sRouter_(e) {
+    #sRouter_(e) {
         switch (e._message) {
             case "makePalindrome":
                 {
                 // make\npalindrome
-                let compartment =  new StringToolsCompartment(this._sMakePalindrome_);
+                let compartment =  new StringToolsCompartment(this.#sMakePalindrome_);
                 
                 compartment._forwardEvent = e;
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
             case "reverse":
                 {
                 // reverse
-                let compartment =  new StringToolsCompartment(this._sReverse_);
+                let compartment =  new StringToolsCompartment(this.#sReverse_);
                 
                 compartment._forwardEvent = e;
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
         }
     }
     
-    _sReverse_(e) {
+    #sReverse_(e) {
         switch (e._message) {
             case "reverse":
                 {
                 e._return = this.reverse_str_do((e._parameters["str"]));
                 // ready
-                let compartment =  new StringToolsCompartment(this._sRouter_);
+                let compartment =  new StringToolsCompartment(this.#sRouter_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
         }
     }
     
-    _sMakePalindrome_(e) {
+    #sMakePalindrome_(e) {
         switch (e._message) {
             case "makePalindrome":
                 {
                 e._return = (e._parameters["str"]) + this.reverse_str_do((e._parameters["str"]));
                 // ready
-                let compartment =  new StringToolsCompartment(this._sRouter_);
+                let compartment =  new StringToolsCompartment(this.#sRouter_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
@@ -137,19 +144,20 @@ class StringTools {
     
     //=============== Machinery and Mechanisms ==============//
     
-    _transition_(compartment) {
-        this._nextCompartment = compartment;
+    #transition(compartment) {
+        this.#nextCompartment = compartment;
     }
     
-    _do_transition_(nextCompartment) {
-        this._mux_(FrameEvent("<", this._compartment.ExitArgs));
-        this._compartment = nextCompartment;
-        this._mux_(FrameEvent(">", this._compartment.EnterArgs));
+    #doTransition(nextCompartment) {
+        this.#mux(FrameEvent("<", this.#compartment.ExitArgs));
+        this.#compartment = nextCompartment;
+        this.#mux(FrameEvent(">", this.#compartment.EnterArgs));
     }
     
     
     
 };
+
 
 //=============== Compartment ==============//
 
