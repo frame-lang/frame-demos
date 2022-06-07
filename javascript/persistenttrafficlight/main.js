@@ -1,4 +1,4 @@
-const TrafficLightMomController = require("./trafficlight/mom")
+const TrafficLightMomController = require("./trafficlight/trafficlightmom")
 
 let mom = new TrafficLightMomController()
 

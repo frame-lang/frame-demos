@@ -1,156 +1,165 @@
 // emitted from framec_v0.10.0
-
-const TrafficLightController = require("./machine");
-const FrameEvent = require("../framelang/framelang");
 // get include files at https://github.com/frame-lang/frame-ancillary-files
+
+const FrameEvent = require("../framelang/framelang");
+const TrafficLightController = require("./trafficlight");
+
 
 class TrafficLightMom {
     
+    // creating private properties
+    
+    #state
+    #compartment
+    #nextCompartment
+    #trafficLight;
+    #data;
+    
     constructor () {
-        
+
         // Create and intialize start state compartment.
         
-        this._state = this._sNew_;
-        this._compartment = new TrafficLightMomCompartment(this._state);
-        this._nextCompartment = null;
+        this.#state = this.#sNew_;
+        this.#compartment = new TrafficLightMomCompartment(this.#state);
+        this.#nextCompartment = null;
         
         // Initialize domain
-        this.trafficLight = null;
-        this.data = null;
+        this.#trafficLight = null;
+        this.#data = null;
         
         // Send system start event
-        this._frameEvent = FrameEvent(">", null);
-        this._mux_(this._frameEvent);
+        const frameEvent = FrameEvent(">", null);
+        this.#mux(frameEvent);
     }
     
     //===================== Interface Block ===================//
     
     stop() {
         let e = FrameEvent("stop",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     tick() {
         let e = FrameEvent("tick",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     enterRed() {
         let e = FrameEvent("enterRed",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     enterGreen() {
         let e = FrameEvent("enterGreen",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     enterYellow() {
         let e = FrameEvent("enterYellow",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     enterFlashingRed() {
         let e = FrameEvent("enterFlashingRed",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     exitFlashingRed() {
         let e = FrameEvent("exitFlashingRed",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     startWorkingTimer() {
         let e = FrameEvent("startWorkingTimer",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     stopWorkingTimer() {
         let e = FrameEvent("stopWorkingTimer",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     startFlashingTimer() {
         let e = FrameEvent("startFlashingTimer",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     stopFlashingTimer() {
         let e = FrameEvent("stopFlashingTimer",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     changeColor(color) {
         let e = FrameEvent("changeColor",{"color":color});
-        this._mux_(e);
+        this.#mux(e);
     }
     
     startFlashing() {
         let e = FrameEvent("startFlashing",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     stopFlashing() {
         let e = FrameEvent("stopFlashing",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     changeFlashingAnimation() {
         let e = FrameEvent("changeFlashingAnimation",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     systemError() {
         let e = FrameEvent("systemError",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     systemRestart() {
         let e = FrameEvent("systemRestart",null);
-        this._mux_(e);
+        this.#mux(e);
     }
     
     log(msg) {
         let e = FrameEvent("log",{"msg":msg});
-        this._mux_(e);
+        this.#mux(e);
     }
     
     //====================== Multiplexer ====================//
     
-    _mux_(e) {
-        switch (this._compartment.state) {
-            case this._sNew_:
-                this._sNew_(e);
+    #mux(e) {
+        switch (this.#compartment.state) {
+            case this.#sNew_:
+                this.#sNew_(e);
                 break;
-            case this._sSaving_:
-                this._sSaving_(e);
+            case this.#sSaving_:
+                this.#sSaving_(e);
                 break;
-            case this._sPersisted_:
-                this._sPersisted_(e);
+            case this.#sPersisted_:
+                this.#sPersisted_(e);
                 break;
-            case this._sWorking_:
-                this._sWorking_(e);
+            case this.#sWorking_:
+                this.#sWorking_(e);
                 break;
-            case this._sTrafficLightApi_:
-                this._sTrafficLightApi_(e);
+            case this.#sTrafficLightApi_:
+                this.#sTrafficLightApi_(e);
                 break;
-            case this._sEnd_:
-                this._sEnd_(e);
+            case this.#sEnd_:
+                this.#sEnd_(e);
                 break;
         }
         
-        if( this._nextCompartment != null) {
-            let nextCompartment = this._nextCompartment
-            this._nextCompartment = null
+        if( this.#nextCompartment != null) {
+            let nextCompartment = this.#nextCompartment
+            this.#nextCompartment = null
             if (nextCompartment._forwardEvent != null && 
                nextCompartment._forwardEvent._message == ">") {
-                this._mux_(FrameEvent( "<", this._compartment.ExitArgs))
-                this._compartment = nextCompartment
-                this._mux_(nextCompartment._forwardEvent)
+                this.#mux(FrameEvent( "<", this.#compartment.ExitArgs))
+                this.#compartment = nextCompartment
+                this.#mux(nextCompartment._forwardEvent)
             } else {
-                this._do_transition_(nextCompartment)
+                this.#doTransition(nextCompartment)
                 if (nextCompartment._forwardEvent != null) {
-                    this._mux_(nextCompartment._forwardEvent)
+                    this.#mux(nextCompartment._forwardEvent)
                 }
             }
             nextCompartment._forwardEvent = null
@@ -159,114 +168,114 @@ class TrafficLightMom {
     
     //===================== Machine Block ===================//
     
-    _sNew_(e) {
+    #sNew_(e) {
         switch (e._message) {
             case ">":
                 {
-                this.trafficLight = new TrafficLightController(this);
+                this.#trafficLight = new TrafficLightController(this);
                 // Traffic Light\nStarted
-                let compartment =  new TrafficLightMomCompartment(this._sSaving_);
+                let compartment =  new TrafficLightMomCompartment(this.#sSaving_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
         }
-        this._sTrafficLightApi_(e);
+        this.#sTrafficLightApi_(e);
         
     }
     
-    _sSaving_(e) {
+    #sSaving_(e) {
         switch (e._message) {
             case ">":
                 {
-                this.data = this.trafficLight.marshal();
-                this.trafficLight = null;
+                this.#data = this.#trafficLight.marshal();
+                this.#trafficLight = null;
                 // Saved
-                let compartment =  new TrafficLightMomCompartment(this._sPersisted_);
+                let compartment =  new TrafficLightMomCompartment(this.#sPersisted_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
         }
     }
     
-    _sPersisted_(e) {
+    #sPersisted_(e) {
         switch (e._message) {
             case "tick":
                 {
                 // Tick
-                let compartment =  new TrafficLightMomCompartment(this._sWorking_);
+                let compartment =  new TrafficLightMomCompartment(this.#sWorking_);
                 
                 compartment._forwardEvent = e;
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
             case "systemError":
                 {
                 // System Error
-                let compartment =  new TrafficLightMomCompartment(this._sWorking_);
+                let compartment =  new TrafficLightMomCompartment(this.#sWorking_);
                 
                 compartment._forwardEvent = e;
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
             case "stop":
                 {
                 // Stop
-                let compartment =  new TrafficLightMomCompartment(this._sEnd_);
+                let compartment =  new TrafficLightMomCompartment(this.#sEnd_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
         }
     }
     
-    _sWorking_(e) {
+    #sWorking_(e) {
         switch (e._message) {
             case ">":
                 {
-                this.trafficLight = TrafficLightController.loadTrafficLight(this,this.data);
+                this.#trafficLight = TrafficLightController.loadTrafficLight(this,this.#data);
                 return;
                 }
                 
             case "tick":
                 {
-                this.trafficLight.tick();
+                this.#trafficLight.tick();
                 // Done
-                let compartment =  new TrafficLightMomCompartment(this._sSaving_);
+                let compartment =  new TrafficLightMomCompartment(this.#sSaving_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
             case "systemError":
                 {
-                this.trafficLight.systemError_do();
+                this.#trafficLight.systemError_do();
                 // Done
-                let compartment =  new TrafficLightMomCompartment(this._sSaving_);
+                let compartment =  new TrafficLightMomCompartment(this.#sSaving_);
                 
                 
-                this._transition_(compartment);
+                this.#transition(compartment);
                 return;
                 }
                 
         }
-        this._sTrafficLightApi_(e);
+        this.#sTrafficLightApi_(e);
         
     }
     
-    _sTrafficLightApi_(e) {
+    #sTrafficLightApi_(e) {
         switch (e._message) {
             case "enterRed":
                 {
@@ -367,18 +376,18 @@ class TrafficLightMom {
         }
     }
     
-    _sEnd_(e) {
+    #sEnd_(e) {
         switch (e._message) {
             case ">":
                 {
-                this.trafficLight = TrafficLightController.loadTrafficLight(this,this.data);
-                this.trafficLight.stop();
-                this.trafficLight = null;
+                this.#trafficLight = TrafficLightController.loadTrafficLight(this,this.#data);
+                this.#trafficLight.stop();
+                this.#trafficLight = null;
                 return;
                 }
                 
         }
-        this._sTrafficLightApi_(e);
+        this.#sTrafficLightApi_(e);
         
     }
     
@@ -405,20 +414,19 @@ class TrafficLightMom {
     
     //=============== Machinery and Mechanisms ==============//
     
-    _transition_(compartment) {
-        this._nextCompartment = compartment;
+    #transition(compartment) {
+        this.#nextCompartment = compartment;
     }
     
-    _do_transition_(nextCompartment) {
-        this._mux_(FrameEvent("<", this._compartment.ExitArgs));
-        this._compartment = nextCompartment;
-        this._mux_(FrameEvent(">", this._compartment.EnterArgs));
+    #doTransition(nextCompartment) {
+        this.#mux(FrameEvent("<", this.#compartment.ExitArgs));
+        this.#compartment = nextCompartment;
+        this.#mux(FrameEvent(">", this.#compartment.EnterArgs));
     }
     
     
     
 };
-
 
 //=============== Compartment ==============//
 
@@ -436,14 +444,13 @@ class TrafficLightMomCompartment {
 }
 
 
-// /********************
+
 
 class TrafficLightMomController extends TrafficLightMom {
 
 	constructor() {
 	  super()
 	}
-
 	enterRed_do() {
         console.log("Red")
     }
@@ -466,10 +473,7 @@ class TrafficLightMomController extends TrafficLightMom {
 	systemError_do() {}
 	systemRestart_do() {}
 	log_do(msg) {}
-
 };
 
-// ********************/
-
-
 module.exports = TrafficLightMomController
+
