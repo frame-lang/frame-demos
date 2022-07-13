@@ -27,6 +27,6 @@
 
   -actions-
 
-  print[s:string] {`console.log(s)`}
+  print[s:string] {`print(s)`}
 
 ##

@@ -2,22 +2,22 @@
 # get include files at https://github.com/frame-lang/frame-ancillary-files
 
 from framelang.framelang import FrameEvent
-class CompartmentParams:
+
+class Countdown:
     
-    def __init__(self, state_param,enter_param):
+    def __init__(self, i):
         
         # Create and intialize start state compartment.
         self.state = self._sS0_
-        self.compartment = CompartmentParamsCompartment(self.state)
+        self.compartment = CountdownCompartment(self.state)
         self.next_compartment = None
-        self.compartment.state_args["state_param"] = state_param
-        self.compartment.state_vars["state_var"] = 100
-        self.compartment.enter_args["enter_param"] = enter_param
+        self.compartment.state_args["i"] = i
+        self.compartment.state_vars["dec"] = 1
         
         # Initialize domain
         
         # Send system start event
-        frame_event = FrameEvent(">", self.compartment.enter_args)
+        frame_event = FrameEvent(">", None)
         self.mux(frame_event)
     
     # ====================== Multiplexer ==================== #
@@ -27,6 +27,8 @@ class CompartmentParams:
             self._sS0_(e)
         elif self.compartment.state == self._sS1_:
             self._sS1_(e)
+        elif self.compartment.state == self._sStop_:
+            self._sStop_(e)
         
         if self.next_compartment != None:
             next_compartment = self.next_compartment
@@ -46,17 +48,29 @@ class CompartmentParams:
     
     def _sS0_(self, e):
         if e._message == ">":
-            self.print_do(str((self.compartment.state_args["state_param"])) + " " + str((self.compartment.state_vars["state_var"])) + " " + str(e._parameters["enter_param"]))
-            compartment = CompartmentParamsCompartment(self._sS1_)
-            compartment.forward_event = e
-            compartment.state_args["state_param"] = self.compartment.state_args["state_param"] + 20
-            compartment.state_vars["state_var"] = 200
+            (self.compartment.state_args["i"]) = (self.compartment.state_args["i"]) - (self.compartment.state_vars["dec"])
+            self.print_do(str((self.compartment.state_args["i"])))
+            if  (self.compartment.state_args["i"]) == 0:
+                compartment = CountdownCompartment(self._sStop_)
+                self.transition(compartment)
+                return
+            
+            compartment = CountdownCompartment(self._sS1_)
+            compartment.enter_args["i"] = self.compartment.state_args["i"]
             self.transition(compartment)
             return
         
     def _sS1_(self, e):
         if e._message == ">":
-            self.print_do(str((self.compartment.state_args["state_param"])) + " " + str((self.compartment.state_vars["state_var"])) + " " + str(e._parameters["enter_param"]))
+            compartment = CountdownCompartment(self._sS0_)
+            compartment.state_args["i"] = e._parameters["i"]
+            compartment.state_vars["dec"] = 1
+            self.transition(compartment)
+            return
+        
+    def _sStop_(self, e):
+        if e._message == ">":
+            self.print_do("done")
             return
         
     
@@ -82,7 +96,7 @@ class CompartmentParams:
 
 # ===================== Compartment =================== #
 
-class CompartmentParamsCompartment:
+class CountdownCompartment:
 
     def __init__(self, state):
         self.state = state
@@ -96,9 +110,9 @@ class CompartmentParamsCompartment:
 
 # ********************
 
-#class CompartmentParamsController(CompartmentParams):
-	#def __init__(self,state_param,enter_param):
-	    #super().__init__(state_param,enter_param)
+#class CountdownController(Countdown):
+	#def __init__(self,i):
+	    #super().__init__(i)
 
 # ********************
 

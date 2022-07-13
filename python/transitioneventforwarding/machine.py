@@ -2,17 +2,16 @@
 # get include files at https://github.com/frame-lang/frame-ancillary-files
 
 from framelang.framelang import FrameEvent
-class CompartmentParams:
+
+class TransitionEventForwarding:
     
-    def __init__(self, state_param,enter_param):
+    def __init__(self, cycles):
         
         # Create and intialize start state compartment.
-        self.state = self._sS0_
-        self.compartment = CompartmentParamsCompartment(self.state)
+        self.state = self._sStart_
+        self.compartment = TransitionEventForwardingCompartment(self.state)
         self.next_compartment = None
-        self.compartment.state_args["state_param"] = state_param
-        self.compartment.state_vars["state_var"] = 100
-        self.compartment.enter_args["enter_param"] = enter_param
+        self.compartment.enter_args["cycles"] = cycles
         
         # Initialize domain
         
@@ -23,10 +22,14 @@ class CompartmentParams:
     # ====================== Multiplexer ==================== #
     
     def mux(self, e):
-        if self.compartment.state == self._sS0_:
-            self._sS0_(e)
-        elif self.compartment.state == self._sS1_:
-            self._sS1_(e)
+        if self.compartment.state == self._sStart_:
+            self._sStart_(e)
+        elif self.compartment.state == self._sForwardEventAgain_:
+            self._sForwardEventAgain_(e)
+        elif self.compartment.state == self._sDecrement_:
+            self._sDecrement_(e)
+        elif self.compartment.state == self._sStop_:
+            self._sStop_(e)
         
         if self.next_compartment != None:
             next_compartment = self.next_compartment
@@ -44,29 +47,55 @@ class CompartmentParams:
     
     # ===================== Machine Block =================== #
     
-    def _sS0_(self, e):
+    def _sStart_(self, e):
         if e._message == ">":
-            self.print_do(str((self.compartment.state_args["state_param"])) + " " + str((self.compartment.state_vars["state_var"])) + " " + str(e._parameters["enter_param"]))
-            compartment = CompartmentParamsCompartment(self._sS1_)
+            if  e._parameters["cycles"] == 0:
+                self.compartment.exit_args["msg"] = "stopping"
+                compartment = TransitionEventForwardingCompartment(self._sStop_)
+                compartment.forward_event = e
+                self.transition(compartment)
+                return
+            else:
+                self.compartment.exit_args["msg"] = "keep going"
+                compartment = TransitionEventForwardingCompartment(self._sForwardEventAgain_)
+                compartment.forward_event = e
+                self.transition(compartment)
+            
+            return
+        
+        elif e._message == "<":
+            self.print_do(e._parameters["msg"])
+            return
+        
+    def _sForwardEventAgain_(self, e):
+        if e._message == ">":
+            compartment = TransitionEventForwardingCompartment(self._sDecrement_)
             compartment.forward_event = e
-            compartment.state_args["state_param"] = self.compartment.state_args["state_param"] + 20
-            compartment.state_vars["state_var"] = 200
             self.transition(compartment)
             return
         
-    def _sS1_(self, e):
+    def _sDecrement_(self, e):
         if e._message == ">":
-            self.print_do(str((self.compartment.state_args["state_param"])) + " " + str((self.compartment.state_vars["state_var"])) + " " + str(e._parameters["enter_param"]))
+            self.print_do(str(e._parameters["cycles"]))
+            compartment = TransitionEventForwardingCompartment(self._sStart_)
+            compartment.enter_args["cycles"] = (e._parameters["cycles"] - 1)
+            self.transition(compartment)
+            return
+        
+    def _sStop_(self, e):
+        if e._message == ">":
+            self.print_do(str(e._parameters["cycles"]))
+            self.print_do("done")
             return
         
     
     # ===================== Actions Block =================== #
     
     
-    def print_do(self,s):
-        print(s)
-    
     # Unimplemented Actions
+    
+    def print_do(self,msg):
+        raise NotImplementedError
     
     
     # =============== Machinery and Mechanisms ============== #
@@ -82,7 +111,7 @@ class CompartmentParams:
 
 # ===================== Compartment =================== #
 
-class CompartmentParamsCompartment:
+class TransitionEventForwardingCompartment:
 
     def __init__(self, state):
         self.state = state
@@ -96,9 +125,12 @@ class CompartmentParamsCompartment:
 
 # ********************
 
-#class CompartmentParamsController(CompartmentParams):
-	#def __init__(self,state_param,enter_param):
-	    #super().__init__(state_param,enter_param)
+#class TransitionEventForwardingController(TransitionEventForwarding):
+	#def __init__(self,cycles):
+	    #super().__init__(cycles)
+
+    #def print_do(self,msg):
+        #pass
 
 # ********************
 

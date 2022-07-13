@@ -9,7 +9,7 @@
     -actions-
 
     print[msg:string] {`
-        console.log(msg)
+        print(msg)
     `}
 
 ##

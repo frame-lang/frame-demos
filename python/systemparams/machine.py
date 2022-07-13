@@ -48,8 +48,13 @@ class SystemParams:
     
     # ===================== Actions Block =================== #
     
+    
     def print_do(self,msg):
-        raise NotImplementedError
+        
+        print(msg)
+    
+    
+    # Unimplemented Actions
     
     
     # =============== Machinery and Mechanisms ============== #
@@ -82,9 +87,6 @@ class SystemParamsCompartment:
 #class SystemParamsController(SystemParams):
 	#def __init__(self,stateMsg,enterMsg):
 	    #super().__init__(stateMsg,enterMsg)
-
-    #def print_do(self,msg):
-        #pass
 
 # ********************
 
