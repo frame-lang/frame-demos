@@ -1,3 +1,6 @@
+```
+from framelang.framelang import FrameEvent
+```
 #HistoryBasic
 
     -interface-
@@ -28,6 +31,6 @@
 
     -actions-
 
-    print[msg:string] 
+    print[msg:str] 
 
 ##

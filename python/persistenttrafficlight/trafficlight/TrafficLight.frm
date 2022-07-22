@@ -74,14 +74,14 @@ from framelang.framelang import FrameEvent
     stopWorkingTimer
     startFlashingTimer
     stopFlashingTimer
-    changeColor [color:string]
+    changeColor [color:str]
     startFlashing
     stopFlashing
     changeFlashingAnimation
-    log [msg:string]
+    log [msg:str]
 
     -domain-
 
-    var flashColor:string = ""
+    var flashColor:str = ""
 
 ##

@@ -1,6 +1,5 @@
 # emitted from framec_v0.10.0
 # get include files at https://github.com/frame-lang/frame-ancillary-files
-
 from framelang.framelang import FrameEvent
 
 class Countdown:
@@ -8,67 +7,67 @@ class Countdown:
     def __init__(self, i):
         
         # Create and intialize start state compartment.
-        self.state = self._sS0_
-        self.compartment = CountdownCompartment(self.state)
-        self.next_compartment = None
-        self.compartment.state_args["i"] = i
-        self.compartment.state_vars["dec"] = 1
+        self.__state = self.__countdown_state_S0
+        self.__compartment: 'CountdownCompartment' = CountdownCompartment(self.__state)
+        self.__next_compartment: 'CountdownCompartment' = None
+        self.__compartment.state_args["i"] = i
+        self.__compartment.state_vars["dec"] = 1
         
         # Initialize domain
         
         # Send system start event
         frame_event = FrameEvent(">", None)
-        self.mux(frame_event)
+        self.__mux(frame_event)
     
     # ====================== Multiplexer ==================== #
     
-    def mux(self, e):
-        if self.compartment.state == self._sS0_:
-            self._sS0_(e)
-        elif self.compartment.state == self._sS1_:
-            self._sS1_(e)
-        elif self.compartment.state == self._sStop_:
-            self._sStop_(e)
+    def __mux(self, e):
+        if self.__compartment.state == self.__countdown_state_S0:
+            self.__countdown_state_S0(e)
+        elif self.__compartment.state == self.__countdown_state_S1:
+            self.__countdown_state_S1(e)
+        elif self.__compartment.state == self.__countdown_state_Stop:
+            self.__countdown_state_Stop(e)
         
-        if self.next_compartment != None:
-            next_compartment = self.next_compartment
-            self.next_compartment = None
-            if(next_compartment.forward_event != None and 
+        if self.__next_compartment != None:
+            next_compartment = self.__next_compartment
+            self.__next_compartment = None
+            if(next_compartment.forward_event is not None and 
                next_compartment.forward_event._message == ">"):
-                self.mux(FrameEvent( "<", self.compartment.exit_args))
-                self.compartment = next_compartment
-                self.mux(next_compartment.forward_event)
+                self.__mux(FrameEvent( "<", self.__compartment.exit_args))
+                self.__compartment = next_compartment
+                self.__mux(next_compartment.forward_event)
             else:
-                self.do_transition(next_compartment)
-                if next_compartment.forward_event != None:
-                    self.mux(next_compartment.forward_event)
+                self.__do_transition(next_compartment)
+                if next_compartment.forward_event is not None:
+                    self.__mux(next_compartment.forward_event)
             next_compartment.forward_event = None
     
     # ===================== Machine Block =================== #
     
-    def _sS0_(self, e):
+    def __countdown_state_S0(self, e):
         if e._message == ">":
-            (self.compartment.state_args["i"]) = (self.compartment.state_args["i"]) - (self.compartment.state_vars["dec"])
-            self.print_do(str((self.compartment.state_args["i"])))
-            if  (self.compartment.state_args["i"]) == 0:
-                compartment = CountdownCompartment(self._sStop_)
-                self.transition(compartment)
+            (self.__compartment.state_args["i"]) = (self.__compartment.state_args["i"]) - (self.__compartment.state_vars["dec"])
+            self.print_do(str((self.__compartment.state_args["i"])))
+            if  (self.__compartment.state_args["i"]) == 0:
+                compartment = CountdownCompartment(self.__countdown_state_Stop)
+                self.__transition(compartment)
                 return
             
-            compartment = CountdownCompartment(self._sS1_)
-            compartment.enter_args["i"] = self.compartment.state_args["i"]
-            self.transition(compartment)
+            compartment = CountdownCompartment(self.__countdown_state_S1)
+            compartment.enter_args["i"] = self.__compartment.state_args["i"]
+            self.__transition(compartment)
             return
         
-    def _sS1_(self, e):
+    def __countdown_state_S1(self, e):
         if e._message == ">":
-            compartment = CountdownCompartment(self._sS0_)
+            compartment = CountdownCompartment(self.__countdown_state_S0)
             compartment.state_args["i"] = e._parameters["i"]
             compartment.state_vars["dec"] = 1
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
-    def _sStop_(self, e):
+    def __countdown_state_Stop(self, e):
         if e._message == ">":
             self.print_do("done")
             return
@@ -77,7 +76,7 @@ class Countdown:
     # ===================== Actions Block =================== #
     
     
-    def print_do(self,s):
+    def print_do(self,s: str):
         print(s)
     
     # Unimplemented Actions
@@ -85,13 +84,13 @@ class Countdown:
     
     # =============== Machinery and Mechanisms ============== #
     
-    def transition(self, compartment):
-        self.next_compartment = compartment
+    def __transition(self, compartment: 'CountdownCompartment'):
+        self.__next_compartment = compartment
     
-    def do_transition(self, next_compartment):
-        self.mux(FrameEvent("<", self.compartment.exit_args))
-        self.compartment = next_compartment
-        self.mux(FrameEvent(">", self.compartment.enter_args))
+    def  __do_transition(self, next_compartment: 'CountdownCompartment'):
+        self.__mux(FrameEvent("<", self.__compartment.exit_args))
+        self.__compartment = next_compartment
+        self.__mux(FrameEvent(">", self.__compartment.enter_args))
     
 
 # ===================== Compartment =================== #

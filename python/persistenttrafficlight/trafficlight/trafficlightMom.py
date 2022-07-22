@@ -1,181 +1,179 @@
 # emitted from framec_v0.10.0
 # get include files at https://github.com/frame-lang/frame-ancillary-files
-from trafficlight.trafficlight import TrafficLightController 
-
 from framelang.framelang import FrameEvent
-
+from trafficlight.trafficlight import TrafficLightController
 
 class TrafficLightManager:
     
     def __init__(self):
         
         # Create and intialize start state compartment.
-        self.state = self._sNew_
-        self.compartment = TrafficLightManagerCompartment(self.state)
-        self.next_compartment = None
+        self.__state = self.__trafficlightmanager_state_New
+        self.__compartment: 'TrafficLightManagerCompartment' = TrafficLightManagerCompartment(self.__state)
+        self.__next_compartment: 'TrafficLightManagerCompartment' = None
         
         # Initialize domain
         
-        self.trafficLight = None
-        self.data = None
+        self.trafficLight  = None
+        self.data  = None
         
         # Send system start event
         frame_event = FrameEvent(">", None)
-        self.mux(frame_event)
+        self.__mux(frame_event)
     
     # ===================== Interface Block =================== #
     
-    def stop(self):
+    def stop(self,):
         e = FrameEvent("stop",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def tick(self):
+    def tick(self,):
         e = FrameEvent("tick",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def enterRed(self):
+    def enterRed(self,):
         e = FrameEvent("enterRed",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def enterGreen(self):
+    def enterGreen(self,):
         e = FrameEvent("enterGreen",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def enterYellow(self):
+    def enterYellow(self,):
         e = FrameEvent("enterYellow",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def enterFlashingRed(self):
+    def enterFlashingRed(self,):
         e = FrameEvent("enterFlashingRed",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def exitFlashingRed(self):
+    def exitFlashingRed(self,):
         e = FrameEvent("exitFlashingRed",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def startWorkingTimer(self):
+    def startWorkingTimer(self,):
         e = FrameEvent("startWorkingTimer",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def stopWorkingTimer(self):
+    def stopWorkingTimer(self,):
         e = FrameEvent("stopWorkingTimer",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def startFlashingTimer(self):
+    def startFlashingTimer(self,):
         e = FrameEvent("startFlashingTimer",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def stopFlashingTimer(self):
+    def stopFlashingTimer(self,):
         e = FrameEvent("stopFlashingTimer",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def changeColor(self,color):
+    def changeColor(self,color: str):
         parameters = {}
         parameters["color"] = color
 
         e = FrameEvent("changeColor",parameters)
-        self.mux(e)
+        self.__mux(e)
     
-    def startFlashing(self):
+    def startFlashing(self,):
         e = FrameEvent("startFlashing",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def stopFlashing(self):
+    def stopFlashing(self,):
         e = FrameEvent("stopFlashing",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def changeFlashingAnimation(self):
+    def changeFlashingAnimation(self,):
         e = FrameEvent("changeFlashingAnimation",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def systemError(self):
+    def systemError(self,):
         e = FrameEvent("systemError",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def systemRestart(self):
+    def systemRestart(self,):
         e = FrameEvent("systemRestart",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def log(self,msg):
+    def log(self,msg: str):
         parameters = {}
         parameters["msg"] = msg
 
         e = FrameEvent("log",parameters)
-        self.mux(e)
+        self.__mux(e)
     
     # ====================== Multiplexer ==================== #
     
-    def mux(self, e):
-        if self.compartment.state == self._sNew_:
-            self._sNew_(e)
-        elif self.compartment.state == self._sSaving_:
-            self._sSaving_(e)
-        elif self.compartment.state == self._sPersisted_:
-            self._sPersisted_(e)
-        elif self.compartment.state == self._sWorking_:
-            self._sWorking_(e)
-        elif self.compartment.state == self._sTrafficLightApi_:
-            self._sTrafficLightApi_(e)
-        elif self.compartment.state == self._sEnd_:
-            self._sEnd_(e)
+    def __mux(self, e):
+        if self.__compartment.state == self.__trafficlightmanager_state_New:
+            self.__trafficlightmanager_state_New(e)
+        elif self.__compartment.state == self.__trafficlightmanager_state_Saving:
+            self.__trafficlightmanager_state_Saving(e)
+        elif self.__compartment.state == self.__trafficlightmanager_state_Persisted:
+            self.__trafficlightmanager_state_Persisted(e)
+        elif self.__compartment.state == self.__trafficlightmanager_state_Working:
+            self.__trafficlightmanager_state_Working(e)
+        elif self.__compartment.state == self.__trafficlightmanager_state_TrafficLightApi:
+            self.__trafficlightmanager_state_TrafficLightApi(e)
+        elif self.__compartment.state == self.__trafficlightmanager_state_End:
+            self.__trafficlightmanager_state_End(e)
         
-        if self.next_compartment != None:
-            next_compartment = self.next_compartment
-            self.next_compartment = None
-            if(next_compartment.forward_event != None and 
+        if self.__next_compartment != None:
+            next_compartment = self.__next_compartment
+            self.__next_compartment = None
+            if(next_compartment.forward_event is not None and 
                next_compartment.forward_event._message == ">"):
-                self.mux(FrameEvent( "<", self.compartment.exit_args))
-                self.compartment = next_compartment
-                self.mux(next_compartment.forward_event)
+                self.__mux(FrameEvent( "<", self.__compartment.exit_args))
+                self.__compartment = next_compartment
+                self.__mux(next_compartment.forward_event)
             else:
-                self.do_transition(next_compartment)
-                if next_compartment.forward_event != None:
-                    self.mux(next_compartment.forward_event)
+                self.__do_transition(next_compartment)
+                if next_compartment.forward_event is not None:
+                    self.__mux(next_compartment.forward_event)
             next_compartment.forward_event = None
     
     # ===================== Machine Block =================== #
     
-    def _sNew_(self, e):
+    def __trafficlightmanager_state_New(self, e):
         if e._message == ">":
             self.trafficLight = TrafficLightController(self)
             # Traffic Light\nStarted
-            compartment = TrafficLightManagerCompartment(self._sSaving_)
-            self.transition(compartment)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_Saving)
+            self.__transition(compartment)
             return
         
-        self._sTrafficLightApi_(e)
+        self.__trafficlightmanager_state_TrafficLightApi(e)
         
-    def _sSaving_(self, e):
+    def __trafficlightmanager_state_Saving(self, e):
         if e._message == ">":
             self.data = self.trafficLight.marshal()
             self.trafficLight = None
             # Saved
-            compartment = TrafficLightManagerCompartment(self._sPersisted_)
-            self.transition(compartment)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_Persisted)
+            self.__transition(compartment)
             return
         
-    def _sPersisted_(self, e):
+    def __trafficlightmanager_state_Persisted(self, e):
         if e._message == "tick":
             # Tick
-            compartment = TrafficLightManagerCompartment(self._sWorking_)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_Working)
             compartment.forward_event = e
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
         elif e._message == "systemError":
             # System Error
-            compartment = TrafficLightManagerCompartment(self._sWorking_)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_Working)
             compartment.forward_event = e
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
         elif e._message == "stop":
             # Stop
-            compartment = TrafficLightManagerCompartment(self._sEnd_)
-            self.transition(compartment)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_End)
+            self.__transition(compartment)
             return
         
-    def _sWorking_(self, e):
+    def __trafficlightmanager_state_Working(self, e):
         if e._message == ">":
             self.trafficLight = TrafficLightController.loadTrafficLight(self,self.data)
             return
@@ -183,20 +181,20 @@ class TrafficLightManager:
         elif e._message == "tick":
             self.trafficLight.tick()
             # Done
-            compartment = TrafficLightManagerCompartment(self._sSaving_)
-            self.transition(compartment)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_Saving)
+            self.__transition(compartment)
             return
         
         elif e._message == "systemError":
             self.trafficLight.systemError_do()
             # Done
-            compartment = TrafficLightManagerCompartment(self._sSaving_)
-            self.transition(compartment)
+            compartment = TrafficLightManagerCompartment(self.__trafficlightmanager_state_Saving)
+            self.__transition(compartment)
             return
         
-        self._sTrafficLightApi_(e)
+        self.__trafficlightmanager_state_TrafficLightApi(e)
         
-    def _sTrafficLightApi_(self, e):
+    def __trafficlightmanager_state_TrafficLightApi(self, e):
         if e._message == "enterRed":
             self.enterRed_do()
             return
@@ -261,14 +259,14 @@ class TrafficLightManager:
             self.log_do(e._parameters["msg"])
             return
         
-    def _sEnd_(self, e):
+    def __trafficlightmanager_state_End(self, e):
         if e._message == ">":
             self.trafficLight = TrafficLightController.loadTrafficLight(self,self.data)
             self.trafficLight.stop()
             self.trafficLight = None
             return
         
-        self._sTrafficLightApi_(e)
+        self.__trafficlightmanager_state_TrafficLightApi(e)
         
     
     # ===================== Actions Block =================== #
@@ -303,7 +301,7 @@ class TrafficLightManager:
     def stopFlashingTimer_do(self):
         raise NotImplementedError
     
-    def changeColor_do(self,color):
+    def changeColor_do(self,color: str):
         raise NotImplementedError
     
     def startFlashing_do(self):
@@ -321,19 +319,19 @@ class TrafficLightManager:
     def systemRestart_do(self):
         raise NotImplementedError
     
-    def log_do(self,msg):
+    def log_do(self,msg: str):
         raise NotImplementedError
     
     
     # =============== Machinery and Mechanisms ============== #
     
-    def transition(self, compartment):
-        self.next_compartment = compartment
+    def __transition(self, compartment: 'TrafficLightManagerCompartment'):
+        self.__next_compartment = compartment
     
-    def do_transition(self, next_compartment):
-        self.mux(FrameEvent("<", self.compartment.exit_args))
-        self.compartment = next_compartment
-        self.mux(FrameEvent(">", self.compartment.enter_args))
+    def  __do_transition(self, next_compartment: 'TrafficLightManagerCompartment'):
+        self.__mux(FrameEvent("<", self.__compartment.exit_args))
+        self.__compartment = next_compartment
+        self.__mux(FrameEvent(">", self.__compartment.enter_args))
     
 
 # ===================== Compartment =================== #
@@ -403,8 +401,6 @@ class TrafficLightManagerController(TrafficLightManager):
 
     def log_do(self,msg):
         pass
-    
-    
 
 # ********************
 

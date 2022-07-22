@@ -1,3 +1,6 @@
+```
+from framelang.framelang import FrameEvent
+```
 #HistoryStateContext
 
     -interface-
@@ -13,7 +16,7 @@
         |>>| -> $S0 ^
     
     $S0
-        var enterMsg:string = "Enter S0"
+        var enterMsg:str = "Enter S0"
         
         |>| print(enterMsg) ^
         |switchState| -> "Switch\nState" $S1 ^
@@ -30,6 +33,6 @@
 
     -actions-
 
-    print[msg:string] 
+    print[msg:str] 
 
 ##

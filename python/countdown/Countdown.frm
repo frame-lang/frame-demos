@@ -1,4 +1,6 @@
-
+```
+from framelang.framelang import FrameEvent
+```
 #Countdown $[i:int]
 
   -machine-
@@ -21,6 +23,6 @@
 
   -actions-
 
-  print[s:string] {`print(s)`}
+  print[s:str] {`print(s)`}
 
 ##

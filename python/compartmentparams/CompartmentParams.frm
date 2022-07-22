@@ -1,3 +1,6 @@
+```
+from framelang.framelang import FrameEvent
+```
 
 #CompartmentParams $[state_param:int] >[enter_param:int]
 
@@ -27,6 +30,6 @@
 
   -actions-
 
-  print[s:string] {`print(s)`}
+  print[s:str] {`print(s)`}
 
 ##

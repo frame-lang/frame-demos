@@ -1,127 +1,125 @@
 # emitted from framec_v0.10.0
 # get include files at https://github.com/frame-lang/frame-ancillary-files
-
 from framelang.framelang import FrameEvent
-
 
 class HistoryStateContext:
     
-    def __init__(self, ):
+    def __init__(self):
         
         # Create state stack.
         
-        self.state_stack = []
+        self.__state_stack = []
         
         # Create and intialize start state compartment.
-        self.state = self._sStart_
-        self.compartment = HistoryStateContextCompartment(self.state)
-        self.next_compartment = None
+        self.__state = self.__historystatecontext_state_Start
+        self.__compartment: 'HistoryStateContextCompartment' = HistoryStateContextCompartment(self.__state)
+        self.__next_compartment: 'HistoryStateContextCompartment' = None
         
         # Initialize domain
         
         # Send system start event
         frame_event = FrameEvent(">", None)
-        self.mux(frame_event)
+        self.__mux(frame_event)
     
     # ===================== Interface Block =================== #
     
-    def start(self):
+    def start(self,):
         e = FrameEvent(">>",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def switchState(self):
+    def switchState(self,):
         e = FrameEvent("switchState",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def gotoDeadEnd(self):
+    def gotoDeadEnd(self,):
         e = FrameEvent("gotoDeadEnd",None)
-        self.mux(e)
+        self.__mux(e)
     
-    def back(self):
+    def back(self,):
         e = FrameEvent("back",None)
-        self.mux(e)
+        self.__mux(e)
     
     # ====================== Multiplexer ==================== #
     
-    def mux(self, e):
-        if self.compartment.state == self._sStart_:
-            self._sStart_(e)
-        elif self.compartment.state == self._sS0_:
-            self._sS0_(e)
-        elif self.compartment.state == self._sS1_:
-            self._sS1_(e)
-        elif self.compartment.state == self._sDeadEnd_:
-            self._sDeadEnd_(e)
+    def __mux(self, e):
+        if self.__compartment.state == self.__historystatecontext_state_Start:
+            self.__historystatecontext_state_Start(e)
+        elif self.__compartment.state == self.__historystatecontext_state_S0:
+            self.__historystatecontext_state_S0(e)
+        elif self.__compartment.state == self.__historystatecontext_state_S1:
+            self.__historystatecontext_state_S1(e)
+        elif self.__compartment.state == self.__historystatecontext_state_DeadEnd:
+            self.__historystatecontext_state_DeadEnd(e)
         
-        if self.next_compartment != None:
-            next_compartment = self.next_compartment
-            self.next_compartment = None
-            if(next_compartment.forward_event != None and 
+        if self.__next_compartment != None:
+            next_compartment = self.__next_compartment
+            self.__next_compartment = None
+            if(next_compartment.forward_event is not None and 
                next_compartment.forward_event._message == ">"):
-                self.mux(FrameEvent( "<", self.compartment.exit_args))
-                self.compartment = next_compartment
-                self.mux(next_compartment.forward_event)
+                self.__mux(FrameEvent( "<", self.__compartment.exit_args))
+                self.__compartment = next_compartment
+                self.__mux(next_compartment.forward_event)
             else:
-                self.do_transition(next_compartment)
-                if next_compartment.forward_event != None:
-                    self.mux(next_compartment.forward_event)
+                self.__do_transition(next_compartment)
+                if next_compartment.forward_event is not None:
+                    self.__mux(next_compartment.forward_event)
             next_compartment.forward_event = None
     
     # ===================== Machine Block =================== #
     
-    def _sStart_(self, e):
+    def __historystatecontext_state_Start(self, e):
         if e._message == ">>":
-            compartment = HistoryStateContextCompartment(self._sS0_)
+            compartment = HistoryStateContextCompartment(self.__historystatecontext_state_S0)
             compartment.state_vars["enterMsg"] = "Enter S0"
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
-    def _sS0_(self, e):
+    def __historystatecontext_state_S0(self, e):
         if e._message == ">":
-            self.print_do((self.compartment.state_vars["enterMsg"]))
+            self.print_do((self.__compartment.state_vars["enterMsg"]))
             return
         
         elif e._message == "switchState":
             # Switch\nState
-            compartment = HistoryStateContextCompartment(self._sS1_)
-            self.transition(compartment)
+            compartment = HistoryStateContextCompartment(self.__historystatecontext_state_S1)
+            self.__transition(compartment)
             return
         
         elif e._message == "gotoDeadEnd":
-            self.state_stack_push(self.compartment)
+            self.__state_stack_push(self.__compartment)
             # Goto\nDead End
-            compartment = HistoryStateContextCompartment(self._sDeadEnd_)
-            self.transition(compartment)
+            compartment = HistoryStateContextCompartment(self.__historystatecontext_state_DeadEnd)
+            self.__transition(compartment)
             return
         
-    def _sS1_(self, e):
+    def __historystatecontext_state_S1(self, e):
         if e._message == ">":
             self.print_do("Enter S1")
             return
         
         elif e._message == "switchState":
             # Switch\nState
-            compartment = HistoryStateContextCompartment(self._sS0_)
+            compartment = HistoryStateContextCompartment(self.__historystatecontext_state_S0)
             compartment.state_vars["enterMsg"] = "Enter S0"
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
         elif e._message == "gotoDeadEnd":
-            self.state_stack_push(self.compartment)
+            self.__state_stack_push(self.__compartment)
             # Goto\nDead End
-            compartment = HistoryStateContextCompartment(self._sDeadEnd_)
-            self.transition(compartment)
+            compartment = HistoryStateContextCompartment(self.__historystatecontext_state_DeadEnd)
+            self.__transition(compartment)
             return
         
-    def _sDeadEnd_(self, e):
+    def __historystatecontext_state_DeadEnd(self, e):
         if e._message == ">":
             self.print_do("Enter $DeadEnd")
             return
         
         elif e._message == "back":
             # Go Back
-            compartment = self.state_stack_pop()
-            self.transition(compartment)
+            compartment = self.__state_stack_pop()
+            self.__transition(compartment)
             return
         
     
@@ -130,25 +128,25 @@ class HistoryStateContext:
     
     # Unimplemented Actions
     
-    def print_do(self,msg):
+    def print_do(self,msg: str):
         raise NotImplementedError
     
     
     # =============== Machinery and Mechanisms ============== #
     
-    def transition(self, compartment):
-        self.next_compartment = compartment
+    def __transition(self, compartment: 'HistoryStateContextCompartment'):
+        self.__next_compartment = compartment
     
-    def do_transition(self, next_compartment):
-        self.mux(FrameEvent("<", self.compartment.exit_args))
-        self.compartment = next_compartment
-        self.mux(FrameEvent(">", self.compartment.enter_args))
+    def  __do_transition(self, next_compartment: 'HistoryStateContextCompartment'):
+        self.__mux(FrameEvent("<", self.__compartment.exit_args))
+        self.__compartment = next_compartment
+        self.__mux(FrameEvent(">", self.__compartment.enter_args))
     
-    def state_stack_push(self, compartment):
-        self.state_stack.append(compartment)
+    def __state_stack_push(self, compartment: 'HistoryStateContextCompartment'):
+        self.__state_stack.append(compartment)
     
-    def state_stack_pop(self):
-        return self.state_stack.pop()
+    def __state_stack_pop(self):
+        return self.__state_stack.pop()
     
     
 
@@ -172,7 +170,7 @@ class HistoryStateContextCompartment:
 	#def __init__(self,):
 	    #super().__init__()
 
-    #def print_do(self,msg):
+    #def print_do(self,msg: str):
         #pass
 
 # ********************

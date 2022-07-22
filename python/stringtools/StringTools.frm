@@ -1,31 +1,33 @@
-
+```
+from framelang.framelang import FrameEvent
+```
 #StringTools
 
 -interface-
 
-reverse [str:string] : string
-makePalindrome [str:string] : string
+reverse [str:str] : str
+makePalindrome [str:str] : str
 
 -machine-
 
 $Router
-    |makePalindrome| [str:string] : string
+    |makePalindrome| [str:str] : str
         -> "make\npalindrome" => $MakePalindrome ^
-    |reverse| [str:string] : string
+    |reverse| [str:str] : str
         -> "reverse" => $Reverse ^
 
 $Reverse
-    |reverse| [str:string] : string
+    |reverse| [str:str] : str
         @^ = reverse_str(str)
         -> "ready" $Router ^
 
 $MakePalindrome
-    |makePalindrome| [str:string] : string
+    |makePalindrome| [str:str] : str
         @^ = str + reverse_str(str)
         -> "ready" $Router ^
 
 -actions-
 
-reverse_str[str:string]
+reverse_str[str:str]
 
 ##

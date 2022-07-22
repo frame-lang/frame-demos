@@ -1,14 +1,17 @@
-#SystemParams $[stateMsg:string] >[enterMsg:string]
+```
+from framelang.framelang import FrameEvent
+```
+#SystemParams $[stateMsg:str] >[enterMsg:str]
 
     -machine-
 
-    $Begin [stateMsg:string]
-        |>|[enterMsg:string]
+    $Begin [stateMsg:str]
+        |>|[enterMsg:str]
             print(stateMsg + " " + enterMsg) ^
 
     -actions-
 
-    print[msg:string] {`
+    print[msg:str] {`
         print(msg)
     `}
 

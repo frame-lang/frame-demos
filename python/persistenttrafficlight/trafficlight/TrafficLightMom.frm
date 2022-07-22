@@ -1,5 +1,4 @@
 ```
-import copy
 from framelang.framelang import FrameEvent
 ```
 #TrafficLightManager
@@ -17,13 +16,13 @@ from framelang.framelang import FrameEvent
     stopWorkingTimer
     startFlashingTimer
     stopFlashingTimer
-    changeColor [color:string]
+    changeColor [color:str]
     startFlashing
     stopFlashing
     changeFlashingAnimation
     systemError
     systemRestart
-    log [msg:string]
+    log [msg:str]
 
     -machine-
 
@@ -61,13 +60,13 @@ from framelang.framelang import FrameEvent
         |stopWorkingTimer| stopWorkingTimer() ^
         |startFlashingTimer| startFlashingTimer() ^
         |stopFlashingTimer| stopFlashingTimer() ^
-        |changeColor| [color:string] changeColor(color) ^
+        |changeColor| [color:str] changeColor(color) ^
         |startFlashing| startFlashing() ^
         |stopFlashing| stopFlashing() ^
         |changeFlashingAnimation| changeFlashingAnimation() ^
         |systemError| systemError() ^
         |systemRestart| systemRestart() ^
-        |log| [msg:string] log(msg) ^
+        |log| [msg:str] log(msg) ^
 
     $End => $TrafficLightApi
         |>|
@@ -86,15 +85,15 @@ from framelang.framelang import FrameEvent
     stopWorkingTimer
     startFlashingTimer
     stopFlashingTimer   
-    changeColor [color:string]
+    changeColor [color:str]
     startFlashing
     stopFlashing
     changeFlashingAnimation
     systemError
     systemRestart
-    log [msg:string]
+    log [msg:str]
     -domain-
-    var trafficLight:TrafficLight = null
-    var data:`[]byte` = null
+    var trafficLight = null
+    var data = null
 
 ##

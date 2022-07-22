@@ -1,97 +1,95 @@
 # emitted from framec_v0.10.0
 # get include files at https://github.com/frame-lang/frame-ancillary-files
-
 from framelang.framelang import FrameEvent
-
 
 class StringTools:
     
-    def __init__(self, ):
+    def __init__(self):
         
         # Create and intialize start state compartment.
-        self.state = self._sRouter_
-        self.compartment = StringToolsCompartment(self.state)
-        self.next_compartment = None
+        self.__state = self.__stringtools_state_Router
+        self.__compartment: 'StringToolsCompartment' = StringToolsCompartment(self.__state)
+        self.__next_compartment: 'StringToolsCompartment' = None
         
         # Initialize domain
         
         # Send system start event
         frame_event = FrameEvent(">", None)
-        self.mux(frame_event)
+        self.__mux(frame_event)
     
     # ===================== Interface Block =================== #
     
-    def reverse(self,str):
+    def reverse(self,str: str):
         parameters = {}
         parameters["str"] = str
 
         e = FrameEvent("reverse",parameters)
-        self.mux(e)
+        self.__mux(e)
         return e._return
     
-    def makePalindrome(self,str):
+    def makePalindrome(self,str: str):
         parameters = {}
         parameters["str"] = str
 
         e = FrameEvent("makePalindrome",parameters)
-        self.mux(e)
+        self.__mux(e)
         return e._return
     
     # ====================== Multiplexer ==================== #
     
-    def mux(self, e):
-        if self.compartment.state == self._sRouter_:
-            self._sRouter_(e)
-        elif self.compartment.state == self._sReverse_:
-            self._sReverse_(e)
-        elif self.compartment.state == self._sMakePalindrome_:
-            self._sMakePalindrome_(e)
+    def __mux(self, e):
+        if self.__compartment.state == self.__stringtools_state_Router:
+            self.__stringtools_state_Router(e)
+        elif self.__compartment.state == self.__stringtools_state_Reverse:
+            self.__stringtools_state_Reverse(e)
+        elif self.__compartment.state == self.__stringtools_state_MakePalindrome:
+            self.__stringtools_state_MakePalindrome(e)
         
-        if self.next_compartment != None:
-            next_compartment = self.next_compartment
-            self.next_compartment = None
-            if(next_compartment.forward_event != None and 
+        if self.__next_compartment != None:
+            next_compartment = self.__next_compartment
+            self.__next_compartment = None
+            if(next_compartment.forward_event is not None and 
                next_compartment.forward_event._message == ">"):
-                self.mux(FrameEvent( "<", self.compartment.exit_args))
-                self.compartment = next_compartment
-                self.mux(next_compartment.forward_event)
+                self.__mux(FrameEvent( "<", self.__compartment.exit_args))
+                self.__compartment = next_compartment
+                self.__mux(next_compartment.forward_event)
             else:
-                self.do_transition(next_compartment)
-                if next_compartment.forward_event != None:
-                    self.mux(next_compartment.forward_event)
+                self.__do_transition(next_compartment)
+                if next_compartment.forward_event is not None:
+                    self.__mux(next_compartment.forward_event)
             next_compartment.forward_event = None
     
     # ===================== Machine Block =================== #
     
-    def _sRouter_(self, e):
+    def __stringtools_state_Router(self, e):
         if e._message == "makePalindrome":
             # make\npalindrome
-            compartment = StringToolsCompartment(self._sMakePalindrome_)
+            compartment = StringToolsCompartment(self.__stringtools_state_MakePalindrome)
             compartment.forward_event = e
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
         elif e._message == "reverse":
             # reverse
-            compartment = StringToolsCompartment(self._sReverse_)
+            compartment = StringToolsCompartment(self.__stringtools_state_Reverse)
             compartment.forward_event = e
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
-    def _sReverse_(self, e):
+    def __stringtools_state_Reverse(self, e):
         if e._message == "reverse":
             e._return = self.reverse_str_do(e._parameters["str"])
             # ready
-            compartment = StringToolsCompartment(self._sRouter_)
-            self.transition(compartment)
+            compartment = StringToolsCompartment(self.__stringtools_state_Router)
+            self.__transition(compartment)
             return
         
-    def _sMakePalindrome_(self, e):
+    def __stringtools_state_MakePalindrome(self, e):
         if e._message == "makePalindrome":
             e._return = e._parameters["str"] + self.reverse_str_do(e._parameters["str"])
             # ready
-            compartment = StringToolsCompartment(self._sRouter_)
-            self.transition(compartment)
+            compartment = StringToolsCompartment(self.__stringtools_state_Router)
+            self.__transition(compartment)
             return
         
     
@@ -100,19 +98,19 @@ class StringTools:
     
     # Unimplemented Actions
     
-    def reverse_str_do(self,str):
+    def reverse_str_do(self,str: str):
         raise NotImplementedError
     
     
     # =============== Machinery and Mechanisms ============== #
     
-    def transition(self, compartment):
-        self.next_compartment = compartment
+    def __transition(self, compartment: 'StringToolsCompartment'):
+        self.__next_compartment = compartment
     
-    def do_transition(self, next_compartment):
-        self.mux(FrameEvent("<", self.compartment.exit_args))
-        self.compartment = next_compartment
-        self.mux(FrameEvent(">", self.compartment.enter_args))
+    def  __do_transition(self, next_compartment: 'StringToolsCompartment'):
+        self.__mux(FrameEvent("<", self.__compartment.exit_args))
+        self.__compartment = next_compartment
+        self.__mux(FrameEvent(">", self.__compartment.enter_args))
     
 
 # ===================== Compartment =================== #
@@ -135,7 +133,7 @@ class StringToolsCompartment:
 	#def __init__(self,):
 	    #super().__init__()
 
-    #def reverse_str_do(self,str):
+    #def reverse_str_do(self,str: str):
         #pass
 
 # ********************

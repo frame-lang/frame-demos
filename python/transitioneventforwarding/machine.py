@@ -1,65 +1,64 @@
 # emitted from framec_v0.10.0
 # get include files at https://github.com/frame-lang/frame-ancillary-files
-
 from framelang.framelang import FrameEvent
 
 class TransitionEventForwarding:
     
-    def __init__(self, cycles):
+    def __init__(self, cycles: int):
         
         # Create and intialize start state compartment.
-        self.state = self._sStart_
-        self.compartment = TransitionEventForwardingCompartment(self.state)
-        self.next_compartment = None
-        self.compartment.enter_args["cycles"] = cycles
+        self.__state = self.__transitioneventforwarding_state_Start
+        self.__compartment: 'TransitionEventForwardingCompartment' = TransitionEventForwardingCompartment(self.__state)
+        self.__next_compartment: 'TransitionEventForwardingCompartment' = None
+        self.__compartment.enter_args["cycles"] = cycles
         
         # Initialize domain
         
         # Send system start event
-        frame_event = FrameEvent(">", self.compartment.enter_args)
-        self.mux(frame_event)
+        frame_event = FrameEvent(">", self.__compartment.enter_args)
+        self.__mux(frame_event)
     
     # ====================== Multiplexer ==================== #
     
-    def mux(self, e):
-        if self.compartment.state == self._sStart_:
-            self._sStart_(e)
-        elif self.compartment.state == self._sForwardEventAgain_:
-            self._sForwardEventAgain_(e)
-        elif self.compartment.state == self._sDecrement_:
-            self._sDecrement_(e)
-        elif self.compartment.state == self._sStop_:
-            self._sStop_(e)
+    def __mux(self, e):
+        if self.__compartment.state == self.__transitioneventforwarding_state_Start:
+            self.__transitioneventforwarding_state_Start(e)
+        elif self.__compartment.state == self.__transitioneventforwarding_state_ForwardEventAgain:
+            self.__transitioneventforwarding_state_ForwardEventAgain(e)
+        elif self.__compartment.state == self.__transitioneventforwarding_state_Decrement:
+            self.__transitioneventforwarding_state_Decrement(e)
+        elif self.__compartment.state == self.__transitioneventforwarding_state_Stop:
+            self.__transitioneventforwarding_state_Stop(e)
         
-        if self.next_compartment != None:
-            next_compartment = self.next_compartment
-            self.next_compartment = None
-            if(next_compartment.forward_event != None and 
+        if self.__next_compartment != None:
+            next_compartment = self.__next_compartment
+            self.__next_compartment = None
+            if(next_compartment.forward_event is not None and 
                next_compartment.forward_event._message == ">"):
-                self.mux(FrameEvent( "<", self.compartment.exit_args))
-                self.compartment = next_compartment
-                self.mux(next_compartment.forward_event)
+                self.__mux(FrameEvent( "<", self.__compartment.exit_args))
+                self.__compartment = next_compartment
+                self.__mux(next_compartment.forward_event)
             else:
-                self.do_transition(next_compartment)
-                if next_compartment.forward_event != None:
-                    self.mux(next_compartment.forward_event)
+                self.__do_transition(next_compartment)
+                if next_compartment.forward_event is not None:
+                    self.__mux(next_compartment.forward_event)
             next_compartment.forward_event = None
     
     # ===================== Machine Block =================== #
     
-    def _sStart_(self, e):
+    def __transitioneventforwarding_state_Start(self, e):
         if e._message == ">":
             if  e._parameters["cycles"] == 0:
-                self.compartment.exit_args["msg"] = "stopping"
-                compartment = TransitionEventForwardingCompartment(self._sStop_)
+                self.__compartment.exit_args["msg"] = "stopping"
+                compartment = TransitionEventForwardingCompartment(self.__transitioneventforwarding_state_Stop)
                 compartment.forward_event = e
-                self.transition(compartment)
+                self.__transition(compartment)
                 return
             else:
-                self.compartment.exit_args["msg"] = "keep going"
-                compartment = TransitionEventForwardingCompartment(self._sForwardEventAgain_)
+                self.__compartment.exit_args["msg"] = "keep going"
+                compartment = TransitionEventForwardingCompartment(self.__transitioneventforwarding_state_ForwardEventAgain)
                 compartment.forward_event = e
-                self.transition(compartment)
+                self.__transition(compartment)
             
             return
         
@@ -67,22 +66,22 @@ class TransitionEventForwarding:
             self.print_do(e._parameters["msg"])
             return
         
-    def _sForwardEventAgain_(self, e):
+    def __transitioneventforwarding_state_ForwardEventAgain(self, e):
         if e._message == ">":
-            compartment = TransitionEventForwardingCompartment(self._sDecrement_)
+            compartment = TransitionEventForwardingCompartment(self.__transitioneventforwarding_state_Decrement)
             compartment.forward_event = e
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
-    def _sDecrement_(self, e):
+    def __transitioneventforwarding_state_Decrement(self, e):
         if e._message == ">":
             self.print_do(str(e._parameters["cycles"]))
-            compartment = TransitionEventForwardingCompartment(self._sStart_)
+            compartment = TransitionEventForwardingCompartment(self.__transitioneventforwarding_state_Start)
             compartment.enter_args["cycles"] = (e._parameters["cycles"] - 1)
-            self.transition(compartment)
+            self.__transition(compartment)
             return
         
-    def _sStop_(self, e):
+    def __transitioneventforwarding_state_Stop(self, e):
         if e._message == ">":
             self.print_do(str(e._parameters["cycles"]))
             self.print_do("done")
@@ -94,19 +93,19 @@ class TransitionEventForwarding:
     
     # Unimplemented Actions
     
-    def print_do(self,msg):
+    def print_do(self,msg: str):
         raise NotImplementedError
     
     
     # =============== Machinery and Mechanisms ============== #
     
-    def transition(self, compartment):
-        self.next_compartment = compartment
+    def __transition(self, compartment: 'TransitionEventForwardingCompartment'):
+        self.__next_compartment = compartment
     
-    def do_transition(self, next_compartment):
-        self.mux(FrameEvent("<", self.compartment.exit_args))
-        self.compartment = next_compartment
-        self.mux(FrameEvent(">", self.compartment.enter_args))
+    def  __do_transition(self, next_compartment: 'TransitionEventForwardingCompartment'):
+        self.__mux(FrameEvent("<", self.__compartment.exit_args))
+        self.__compartment = next_compartment
+        self.__mux(FrameEvent(">", self.__compartment.enter_args))
     
 
 # ===================== Compartment =================== #
@@ -126,10 +125,10 @@ class TransitionEventForwardingCompartment:
 # ********************
 
 #class TransitionEventForwardingController(TransitionEventForwarding):
-	#def __init__(self,cycles):
-	    #super().__init__(cycles)
+	#def __init__(self,cycles: int):
+	    #super().__init__(cycles: int)
 
-    #def print_do(self,msg):
+    #def print_do(self,msg: str):
         #pass
 
 # ********************

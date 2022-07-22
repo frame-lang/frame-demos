@@ -1,4 +1,6 @@
-
+```
+from framelang.framelang import FrameEvent
+```
 #FizzBuzz
 
   -interface-
@@ -33,7 +35,7 @@
         (" ") -> (plus_1(i)) "fizzed" $Fizz ^
       ::
       ("") -> (i) "! mod3 | mod5" $Digit ^
-    |<| [output:string]
+    |<| [output:str]
       print(output) ^
 
     $Digit
@@ -46,7 +48,7 @@
 
    -actions-
 
-   print    [msg:string]
+   print    [msg:str]
    gt_100   [i:int]:bool
    mod3_eq0 [i:int]:bool
    mod5_eq0 [i:int]:bool

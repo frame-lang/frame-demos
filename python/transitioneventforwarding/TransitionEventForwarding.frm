@@ -1,3 +1,6 @@
+```
+from framelang.framelang import FrameEvent
+```
 #TransitionEventForwarding >[cycles:int]
 
     -machine-
@@ -9,7 +12,7 @@
             :
                ("keep going") -> => $ForwardEventAgain
             :: ^
-        |<| [msg:string] print(msg)  ^
+        |<| [msg:str] print(msg)  ^
             
     $ForwardEventAgain
         |>| [cycles:int] -> => $Decrement ^
@@ -27,5 +30,5 @@
 
     -actions-
 
-    print[msg:string]
+    print[msg:str]
 ##
