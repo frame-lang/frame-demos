@@ -3,13 +3,25 @@ import java.util.*;
 // emitted from framec_v0.10.0
 // get include files at https://github.com/frame-lang/frame-ancillary-files
 
+enum SystemParamState {
+    BEGIN(0), END(1);
+
+    public final int value;
+
+    private SystemParamState(int value) {
+        this.value = value;
+    }
+    
+    public int getValue() { return value; }
+}
+
 class SystemParams {
 
     private SystemParamsCompartment _compartment_;
     private SystemParamsCompartment _nextCompartment_;
 
     SystemParams() {
-        _state_ = this::_sBegin_;
+//        _state_ = this::_sBegin_;
         // _stateContext_ = new StateContext(this::_sBegin_);
     }
 
@@ -17,7 +29,7 @@ class SystemParams {
 
         // Create and intialize start state compartment.
 
-        this._state_=this::_sBegin_;
+//        this._state_=this::_sBegin_;
         this._compartment_=new SystemParamsCompartment(this._state_);
         this._nextCompartment_=null;
         this._compartment_.stateArgs.put("stateMsg", stateMsg);
@@ -33,7 +45,8 @@ class SystemParams {
     //====================== Multiplexer ====================//
 
     private void _mux_(FrameEvent e){
-        if(_compartment_.state != null) {
+    			
+        if(this._compartment_.state==SystemParamState.BEGIN.getValue()) {
             this._sBegin_(e);
         }
 
@@ -72,7 +85,7 @@ class SystemParams {
     
     //=============== Machinery and Mechanisms ==============//
     
-    private FrameState _state_;
+    private int _state_;
     // private StateContext _stateContext_;
 
     private void _transition_(SystemParamsCompartment compartment) {
@@ -91,9 +104,9 @@ class SystemParams {
 
 class SystemParamsCompartment {
 
-    FrameState state;
+    int state;
 
-    SystemParamsCompartment(FrameState state) {
+    SystemParamsCompartment(int state) {
         this.state=state;
     }
 
@@ -120,4 +133,3 @@ class SystemParamsController extends SystemParams {
         System.out.println(msg);
     }
 }
-
