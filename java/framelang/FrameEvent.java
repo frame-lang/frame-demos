@@ -1,10 +1,6 @@
 import java.util.*;
-
-interface FrameState { 
-    void call(FrameEvent e); 
-}
     
-class FrameEvent {
+public class FrameEvent {
     FrameEvent(String message, HashMap<String,Object> parameters) {
         this._message = message;
         this._parameters = parameters;
