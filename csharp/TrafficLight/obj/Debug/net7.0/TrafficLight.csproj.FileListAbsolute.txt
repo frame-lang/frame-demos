@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\bin\Debug\net7.0\TrafficLight.exe
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\bin\Debug\net7.0\TrafficLight.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\bin\Debug\net7.0\TrafficLight.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\bin\Debug\net7.0\TrafficLight.dll
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\bin\Debug\net7.0\TrafficLight.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.dll
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\refint\TrafficLight.dll
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\TrafficLight.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TrafficLight\obj\Debug\net7.0\ref\TrafficLight.dll

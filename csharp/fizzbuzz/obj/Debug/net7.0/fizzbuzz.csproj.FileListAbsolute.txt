@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\bin\Debug\net7.0\fizzbuzz.exe
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\bin\Debug\net7.0\fizzbuzz.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\bin\Debug\net7.0\fizzbuzz.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\bin\Debug\net7.0\fizzbuzz.dll
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\bin\Debug\net7.0\fizzbuzz.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.dll
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\refint\fizzbuzz.dll
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\fizzbuzz.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\fizzbuzz\obj\Debug\net7.0\ref\fizzbuzz.dll

@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\bin\Debug\net7.0\StringTools.exe
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\bin\Debug\net7.0\StringTools.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\bin\Debug\net7.0\StringTools.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\bin\Debug\net7.0\StringTools.dll
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\bin\Debug\net7.0\StringTools.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.dll
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\refint\StringTools.dll
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\StringTools.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\StringTools\obj\Debug\net7.0\ref\StringTools.dll

@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\bin\Debug\net7.0\Countdown.exe
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\bin\Debug\net7.0\Countdown.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\bin\Debug\net7.0\Countdown.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\bin\Debug\net7.0\Countdown.dll
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\bin\Debug\net7.0\Countdown.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.dll
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\refint\Countdown.dll
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\Countdown.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\Countdown\obj\Debug\net7.0\ref\Countdown.dll

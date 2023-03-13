@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\bin\Debug\net7.0\CompartmentParams.exe
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\bin\Debug\net7.0\CompartmentParams.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\bin\Debug\net7.0\CompartmentParams.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\bin\Debug\net7.0\CompartmentParams.dll
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\bin\Debug\net7.0\CompartmentParams.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.dll
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\refint\CompartmentParams.dll
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\CompartmentParams.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\CompartmentParams\obj\Debug\net7.0\ref\CompartmentParams.dll

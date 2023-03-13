@@ -1,0 +1,5 @@
+E:\my projects\CurrentProject\frame-demos\csharp\obj\Debug\net7.0\csharp.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\obj\Debug\net7.0\csharp.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\obj\Debug\net7.0\csharp.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\obj\Debug\net7.0\csharp.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\obj\Debug\net7.0\csharp.csproj.CoreCompileInputs.cache

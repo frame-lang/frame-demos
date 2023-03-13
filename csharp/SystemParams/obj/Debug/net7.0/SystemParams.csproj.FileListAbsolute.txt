@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\bin\Debug\net7.0\SystemParams.exe
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\bin\Debug\net7.0\SystemParams.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\bin\Debug\net7.0\SystemParams.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\bin\Debug\net7.0\SystemParams.dll
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\bin\Debug\net7.0\SystemParams.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.dll
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\refint\SystemParams.dll
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\SystemParams.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\SystemParams\obj\Debug\net7.0\ref\SystemParams.dll

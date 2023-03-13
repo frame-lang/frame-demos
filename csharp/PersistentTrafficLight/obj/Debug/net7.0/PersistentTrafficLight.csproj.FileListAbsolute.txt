@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\bin\Debug\net7.0\PersistentTrafficLight.exe
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\bin\Debug\net7.0\PersistentTrafficLight.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\bin\Debug\net7.0\PersistentTrafficLight.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\bin\Debug\net7.0\PersistentTrafficLight.dll
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\bin\Debug\net7.0\PersistentTrafficLight.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.dll
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\refint\PersistentTrafficLight.dll
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\PersistentTrafficLight.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\PersistentTrafficLight\obj\Debug\net7.0\ref\PersistentTrafficLight.dll

@@ -1,0 +1,15 @@
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\bin\Debug\net7.0\TransitionEventForwarding.exe
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\bin\Debug\net7.0\TransitionEventForwarding.deps.json
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\bin\Debug\net7.0\TransitionEventForwarding.runtimeconfig.json
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\bin\Debug\net7.0\TransitionEventForwarding.dll
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\bin\Debug\net7.0\TransitionEventForwarding.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.csproj.AssemblyReference.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.GeneratedMSBuildEditorConfig.editorconfig
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.AssemblyInfoInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.AssemblyInfo.cs
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.csproj.CoreCompileInputs.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.dll
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\refint\TransitionEventForwarding.dll
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.pdb
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\TransitionEventForwarding.genruntimeconfig.cache
+E:\my projects\CurrentProject\frame-demos\csharp\TransitionEventForwarding\obj\Debug\net7.0\ref\TransitionEventForwarding.dll
